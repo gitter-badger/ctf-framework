@@ -84,7 +84,7 @@ scoreboard_head = """
 
 scoreboard_cell = """
 					<tr>
-					  <td>%s</td>
+	        			  <td>%s</td>
 					  <td>%s</td>
 					  <td>%s</td>
 					</tr>
@@ -105,7 +105,7 @@ submit_bar = """
         <div class="navbar-collapse collapse">
           <form class="navbar-form navbar-right" method='POST'>
 
-          	<div class="form-group">
+            <div class="form-group">
               <input type="text" placeholder="Team Name" class="form-control" name='team_name'>
             </div>
 
@@ -125,7 +125,7 @@ task_description = """
 <div class="well">
 	<h3> %s </h3>
 	%s
-	<a target="_blank" href= "http://10.0.0.191:8888/%s"  class="link"> %s </a>
+	<a target="_blank" href= "http://%s:%s/%s"  class="link"> %s </a>
 </div>
 """
 
