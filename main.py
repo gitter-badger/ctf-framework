@@ -182,7 +182,7 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 if __name__ == '__main__':
 	server_class = BaseHTTPServer.HTTPServer
 	httpd = server_class((config.host, config.port), MyHandler)
-	sys.stdout = open(config.logfile, 'w')
+	sys.stdout = open(config.logfile, 'a')
 	print "\n\n\n"
 	print time.asctime(), "Server Starts - %s:%s" % (config.host, config.port)
 	try:

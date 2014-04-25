@@ -18,3 +18,4 @@ hints_enabled = 1
 default_modules = ['__builtins__', '__doc__', '__file__', '__name__', '__package__']
 
 
+logfile = '/var/log/msuctf'
