@@ -4,4 +4,4 @@
 3. Get rid of some shit code
 4. Logging of GET and POST server queries
 5. If wrong flag is submitted then stay on the same page with notice. (DO NOT SENT USER TO THE MAIN PAGE)
-
+6. Insert HASHES of flags in "desc file" instead of plain text.
