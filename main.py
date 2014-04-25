@@ -21,7 +21,7 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 		self.end_headers()
 
 	def do_POST(self):
-		if ( config.tasks_enabled ):
+		if (config.tasks_enabled):
 			q = urlparse(self.path)
 			args = parse_qs(q.query)
 
@@ -43,9 +43,13 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 				else:
 					if(o[3].strip("\n") == postvars['flag'][0]):
 						q = "insert into score values ('%s', '%s', %s, '%s');"
-						connection.execute(q % (postvars['team_name'][0], postvars['flag'][0], args['c'][0], time.strftime('%Y-%m-%d %H:%M:%S')))
+						connection.execute(q % (postvars['team_name'][0],
+												postvars['flag'][0],
+												args['c'][0],
+												time.strftime('%Y-%m-%d %H:%M:%S'))
+											)
 						connection.commit()
-						print 'posted?'
+						
 						self.send_header("Location", "index?r=success")
 					else:
 						self.send_header("Location", "index?r=fail")
@@ -92,7 +96,7 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 				document += hint_bottom
 				for i in range(0, len(task_types)):
 					document += (task_row_h % task_types[i])
-                                        for subdir in filter(lambda x: not '.vdi' in x, os.listdir("./tasks/" + task_types[i])):
+										for subdir in os.listdir("./tasks/" + task_types[i]):
 						if not (subdir == "index.html"):
 							dp = "tasks/" + task_types[i] + '/' + subdir + '/'
 							if (os.path.isfile(dp + 'desc')):
@@ -100,8 +104,14 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
 								# Select from database. If task is already submitted the mark it with yellow.
 								f.readline()
-								document += (task_div % ( task_types[i] , subdir,
-									"btn-primary", subdir, f.readline().strip('\n')))
+								document += (task_div % (
+												task_types[i],
+												subdir,
+												"btn-primary",
+												subdir,
+												f.readline().strip('\n')
+												)
+											)
 								f.close()
 					document += task_row_f
 				document += div_row_e + footer
@@ -109,20 +119,25 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 			else:
 				document += " ARGHHHHHH..... Tasks are closed. "
 
-		elif ((q.path.strip('/') == "") and (args.has_key('t')) and (args.has_key('c')) and os.path.isdir('tasks/' + args['t'][0] + '/' + args['c'][0])):
-			f = open ('tasks/' + args['t'][0] + '/' + args['c'][0] + '/desc', 'r')
+		elif ((q.path.strip('/') == "") and (args.has_key('t')) and 
+				(args.has_key('c')) and 
+				os.path.isdir( '/'.join( 'tasks', args['t'][0],  args['c'][0])):
+
+			f = open ( '/'.join( 'tasks', args['t'][0], args['c'][0], 'desc'), 'r')
 			o = f.readlines()
-			document = head + submit_bar + menu % ("", "active", "") + (title % args['t'][0]) + task_description % ( o[1].strip('\n'),
-				o[2].strip('\n'),
-				args['t'][0] + '/' + args['c'][0] + '/' + o[0].strip('\n'),
-				o[0].strip('\n')
-			)
+			document = head + submit_bar + menu % ("", "active", "") + (title % args['t'][0]) + task_description % ( 
+																													o[1].strip('\n'),
+																													o[2].strip('\n'),
+																													host_ip,
+																													tasks_port,
+																													args['t'][0] + '/' + args['c'][0] + '/' + o[0].strip('\n'),
+																													o[0].strip('\n')
+																													)
 
 			f.close()
 
-		elif (q.path.strip("/") == "" or q.path.strip("/") == "index" ):
+		elif (not q.path.strip("/")  or q.path.strip("/") == "index" ):
 			if (args.has_key('r')):
-
 				if (args['r'][0] == 'success'):
 					notice = flag_added
 				elif (args['r'][0] == 'fail'):
