@@ -1,0 +1,15 @@
+CTF Framework 0.1 README
+
+
+1. Introduction
+	Hello. You are about to use my ctf-framework. Here I'll try to publish all the information about ideas behind this system,
+	about setting it up, about security etc. 
+
+	Please check TODOLIST in this repository if you want to help us. Remember! In this framework tab identations are used! 
+	Turn all your space identations into tabs before commiting. Thanks!
+
+2. Ideas
+	The main concept of this framework is to allow people import their tasks as easy as possible.
+
+
+	#TODO : Finish README file
