@@ -1,7 +1,7 @@
 #!/usr/bin/python2
 
 import os
-import imp
+import sys
 import time
 import hints
 import config
@@ -28,34 +28,34 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 			length = int(self.headers.getheader('content-length'))
 			postvars = parse_qs(self.rfile.read(length))
 			if (postvars.has_key('team_name') and postvars.has_key('flag')):
-				f = open ('/'. join('tasks/', args['t'][0],args['c'][0], 'desc', 'r')
-				o = f.readlines()
-				self.send_response(301)
+				with open ('/'. join('tasks/', args['t'][0],args['c'][0], 'desc'), 'r') as f:
+					o = f.readlines()
+					self.send_response(301)
 
 
-				connection = sql.connect('score.db')
-				q = "select team_name from score where flag = '%s' and team_name = '%s';"
-				res = connection.execute(q % (postvars['flag'][0], postvars['team_name'][0]))
-				for row in res:
-					if (row):
-						self.send_header("Location", "index?r=already_added")
-						break
-				else:
-					if(o[3].strip("\n") == postvars['flag'][0]):
-						q = "insert into score values ('%s', '%s', %s, '%s');"
-						connection.execute(q % (postvars['team_name'][0],
-												postvars['flag'][0],
-												args['c'][0],
-												time.strftime('%Y-%m-%d %H:%M:%S'))
-											)
-						connection.commit()
-						
-						self.send_header("Location", "index?r=success")
+					connection = sql.connect('score.db')
+					q = "select team_name from score where flag = '%s' and team_name = '%s';"
+					res = connection.execute(q % (postvars['flag'][0], postvars['team_name'][0]))
+					for row in res:
+						if (row):
+							self.send_header("Location", "index?r=already_added")
+							break
 					else:
-						self.send_header("Location", "index?r=fail")
+						if(o[3].strip("\n") == postvars['flag'][0]):
+							q = "insert into score values ('%s', '%s', %s, '%s');"
+							connection.execute(q % (postvars['team_name'][0],
+								postvars['flag'][0],
+								args['c'][0],
+								time.strftime('%Y-%m-%d %H:%M:%S'))
+												)
+							connection.commit()
+							
+							self.send_header("Location", "index?r=success")
+						else:
+							self.send_header("Location", "index?r=fail")
 
-				connection.close()
-				f.close()
+					connection.close()
+
 				self.end_headers()
 
 			else:
@@ -96,22 +96,21 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 				document += hint_bottom
 				for i in range(0, len(task_types)):
 					document += (task_row_h % task_types[i])
-										for subdir in os.listdir("./tasks/" + task_types[i]):
+					for subdir in os.listdir("./tasks/" + task_types[i]):
 						if not (subdir == "index.html"):
-							dp = ''.join('tasks/' task_types[i], subdir, '')
+							dp = '/'.join(['tasks', task_types[i], subdir, ''])
 							if (os.path.isfile(dp + 'desc')):
-								f = open (dp + 'desc', 'r')
-
-								f.readline()
-								document += (task_div % (
-												task_types[i],
-												subdir,
-												'btn-primary',
-												subdir,
-												f.readline().strip('\n')
+								with open (dp + 'desc', 'r') as f:
+									f.readline()
+									document += (task_div % (
+													task_types[i],
+													subdir,
+													'btn-primary',
+													subdir,
+													f.readline().strip('\n')
+													)
 												)
-											)
-								f.close()
+
 					document += task_row_f
 				document += div_row_e + footer
 
@@ -120,21 +119,19 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
 		elif ((q.path.strip('/') == "") and (args.has_key('t')) and 
 				(args.has_key('c')) and 
-				os.path.isdir( '/'.join( 'tasks', args['t'][0],  args['c'][0])):
+				os.path.isdir( '/'.join(['tasks', args['t'][0],  args['c'][0]]))):
 
-			f = open ( '/'.join( 'tasks', args['t'][0], args['c'][0], 'desc'), 'r')
+			f = open ( '/'.join( ['tasks', args['t'][0], args['c'][0], 'desc' ] ), 'r')
 			o = f.readlines()
-			document = '\n'.join(head, 	submit_bar,
+			document = '\n'.join( [head, 	submit_bar,
 								menu % ('', 'active', ''), (title % args['t'][0]), 
-								task_description % ( 
+								task_description.format( o[0].strip('\n'),
 									o[1].strip('\n'),
 									o[2].strip('\n'),
 									host_ip,
 									tasks_port,
-									args['t'][0] + '/' + args['c'][0] + '/' + o[0].strip('\n'),
-									o[0].strip('\n')
+									'/'.join([args['t'][0], args['c'][0]]))]
 								)
-
 			f.close()
 
 		elif (not q.path.strip('/')  or q.path.strip('/') == 'index' ):
@@ -150,7 +147,7 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 			else:
 				notice = ''
 
-			document = '\n'.join(head, notice, (menu % ('active', '', '')), (title % 'HOME'))
+			document = '\n'.join([head, notice, (menu % ('active', '', '')), (title % 'HOME') ])
 
 			document += home
 			document += footer
@@ -185,6 +182,8 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 if __name__ == '__main__':
 	server_class = BaseHTTPServer.HTTPServer
 	httpd = server_class((config.host, config.port), MyHandler)
+	sys.stdout = open(config.logfile, 'w')
+	print "\n\n\n"
 	print time.asctime(), "Server Starts - %s:%s" % (config.host, config.port)
 	try:
 		httpd.serve_forever()

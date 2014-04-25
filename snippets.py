@@ -123,9 +123,9 @@ submit_bar = """
 
 task_description = """
 <div class="well">
-	<h3> %s </h3>
-	%s
-	<a target="_blank" href= "http://%s:%s/%s"  class="link"> %s </a>
+	<h3> {1} </h3>
+	{2}
+	<a target="_blank" href= "http://{3}:{4}/{5}/{0}"  class="link"> {0} </a>
 </div>
 """
 
