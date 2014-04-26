@@ -39,7 +39,7 @@ hint_top = """
 	</div>
 """
 
-hint = "<p> %s </p>"
+snipp_hint = "<p> %s </p>"
 
 hints_disabled = "<p> <b>  Sorry</b>, but hints are not available yet! </p>"
 
