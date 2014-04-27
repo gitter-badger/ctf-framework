@@ -50,7 +50,7 @@ div_row_e = "</div>"
 task_row_h = """
 	<div style="height: 250px;" class="col-xs-4 col-md-4" align="center">
 	  <h2>%s</h2>
-"""
+"""	
 
 task_div = """
 <div class="task">
@@ -132,4 +132,4 @@ flag_added = """<div class="alert alert-success"><b> Well done! </b> Your flag h
 
 flag_declined = """<div class="alert alert-danger"><b> Oh snap! </b> Wrong flag! Try again later!  </div>"""
 
-flag_already_been_added = """<div class="alert alert-warning"><b> Warning! </b> The flag has already been added! The incedent will be reported!  </div>"""
+flag_already_been_added = """<div class="alert alert-warning"><b> Warning! </b> The flag has already been added! The incident will be reported!  </div>"""
