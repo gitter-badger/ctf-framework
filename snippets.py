@@ -4,6 +4,7 @@ head = """<!DOCTYPE html>
 	<title> CTF@MSU </title>
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+        <link rel="icon" href="data:;base64,=">
 	<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 
 </head>
@@ -55,7 +56,7 @@ task_row_h = """
 
 task_div = """
 <div class="task">
-	<p><a href= "/?t=%s&c=%s" class="btn %s"> %s. %s</a></p>
+	<p><a href= "/?t={0}&c={1}" class="btn {2}"> {0}. {3}</a></p>
 </div>
 """
 

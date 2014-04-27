@@ -15,6 +15,7 @@ from snippets import *
 from urlparse import urlparse, parse_qs
 
 ttypes = loader.load_task_types()
+subttypes = loader.load_task_subtypes(ttypes)
 
 class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     
@@ -27,22 +28,19 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         if (not config.tasks_enabled):
             return 'ARGHHHHHH..... Tasks are closed.'
 
-        document = ''
+        document = self.fhead('TASKS') + self.fhints()
 
-        document += self.fhead('TASKS') + self.fhints()
-
-        for ttype in range(len(ttypes)):
-            document += (task_row_h % task_types[i])
-            for subdir in loader.task_types:
-                dp = '/'.join(['tasks', task_types[i], subdir, 'desc'])
+        for ttype in ttypes:
+            document += (task_row_h % ttype)
+            for subttype in subttypes[ttype]:
+                dp = '/'.join(['tasks', ttype, subttype, 'desc'])
                 if (os.path.isfile(dp)):
                     with open (dp, 'r') as f:
                         f.readline()
-                        document += (task_div % (
-                                        task_types[i],
-                                        subdir,
+                        document += (task_div.format(
+                                        ttype,
+                                        subttype,
                                         'btn-primary',
-                                        subdir,
                                         f.readline().strip('\n')
                                         )
                                     )
@@ -111,7 +109,7 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         for row in res:
             j += 1
             document += scoreboard_cell % (j, row[0], row[1])
-            
+
         connection.close()
         return document +scoreboard_footer
         
@@ -174,16 +172,16 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         q = urlparse(self.path)
         args = parse_qs(q.query)
 
-        try:
-            document = {
-                'tasks': self.tasks(),
-                '': self.index(q, args),
-                'index': self.index(q, args),
-                'scoreboard': self.scoreboard()
-            }[q.path.strip('/')]
-        except:
-            document = '404'
-            print q.path.strip('/')
+        # try:
+        document = {
+            'tasks': self.tasks(),
+            '': self.index(q, args),
+            'index': self.index(q, args),
+            'scoreboard': self.scoreboard()
+        }[q.path.strip('/')]
+        # except:
+            # document = '404'
+            # print q.path.strip('/')
 
         self.send_response(200)
         self.send_header("Content-type", "text/html")
