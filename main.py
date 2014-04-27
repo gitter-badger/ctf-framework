@@ -128,7 +128,7 @@ def scoreboard ():
 @app.route('/task/<task_name>/<int:cost>')
 def task(task_name, cost):
     with open ( '/'.join( ['tasks', task_name, cost, 'desc' ] ), 'r') as f:
-            return '\n'.join( [head,    submit_bar,
+            return '\n'.join([head,    submit_bar,
                                 menu % ('', 'active', ''), (title % task_name), 
                                 task_description.format( f.readline().strip('\n'),
                                     f.readline().strip('\n'),
@@ -146,7 +146,7 @@ def tasks():
     document = fhead('TASKS') + fhints()
 
     # If session isset the select * from table score
-    #   
+    #   for each task which is solved by this session make color - green
     # else do nothing 
 
     for ttype in ttypes:
