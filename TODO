@@ -3,5 +3,4 @@
 	* MUST DO this SAFE so that other teams can not see the tasks you solved.
     * With brand net db fixed
 3. Logging of GET and POST server queries
-4. If wrong flag is submitted then stay on the same page with notice. (DO NOT SENT USER TO THE MAIN PAGE)
-5. Insert HASHES of flags in "desc file" instead of plain text.
+4. Update design
