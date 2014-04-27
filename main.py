@@ -100,20 +100,20 @@ def commit_flag(task_type, cost):
 
         connection = sql.connect('score.db')
 
-        q = "select team_name from score where task_type = \'%s\' and cost = \'%s\' and team_name = \'%s\';"
+        q = "select team_name from score where task_type = ? and cost = ? and team_name = ?;"
 
-        res = [r for r in connection.execute(q % (task_type, cost, team_name))]
+        res = [r for r in connection.execute(q, [task_type, cost, team_name])]
         print res
 
         if res:
                 return show_task(task_type, cost, notice='already_added')
         else:
             if(o[3].strip('\n') == flag.hexdigest()):
-                q = 'insert into score values (\'%s\', \'%s\', %s, \'%s\');'
-                connection.execute(q % (team_name,
+                q = 'insert into score values (?, ?, ?, ?);'
+                connection.execute(q, [team_name,
                     task_type,
                     cost,
-                    time.strftime('%Y-%m-%d %H:%M:%S'))
+                    time.strftime('%Y-%m-%d %H:%M:%S')]
                 )
                 connection.commit()
                 connection.close()
