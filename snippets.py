@@ -56,7 +56,7 @@ task_row_h = """
 
 task_div = """
 <div class="task">
-	<p><a href= "/?t={0}&c={1}" class="btn {2}"> {0}. {3}</a></p>
+	<p><a href= "task/{0}/{1}" class="btn {2}"> {0}. {3}</a></p>
 </div>
 """
 
