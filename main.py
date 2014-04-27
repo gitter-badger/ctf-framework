@@ -26,7 +26,7 @@ subttypes = loader.load_task_subtypes(ttypes)
 
 #
 # This part is NOT FINISHED YET
-#
+# TO DEL
 
 #     def do_POST(self):
 #         if (config.tasks_enabled):
@@ -144,6 +144,10 @@ def tasks():
         return 'ARGHHHHHH..... Tasks are closed.'
 
     document = fhead('TASKS') + fhints()
+
+    # If session isset the select * from table score
+    #   
+    # else do nothing 
 
     for ttype in ttypes:
         document += (task_row_h % ttype)
