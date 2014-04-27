@@ -1,7 +1,7 @@
 1. Logging of the flag submitting
 2. Mark solved tasks with green. Can be solved with usage of cookies.
 	* MUST DO this SAFE so that other teams can not see the tasks you solved.
-3. Get rid of some shit code
-4. Logging of GET and POST server queries
-5. If wrong flag is submitted then stay on the same page with notice. (DO NOT SENT USER TO THE MAIN PAGE)
-6. Insert HASHES of flags in "desc file" instead of plain text.
+    * With brand net db fixed
+3. Logging of GET and POST server queries
+4. If wrong flag is submitted then stay on the same page with notice. (DO NOT SENT USER TO THE MAIN PAGE)
+5. Insert HASHES of flags in "desc file" instead of plain text.
