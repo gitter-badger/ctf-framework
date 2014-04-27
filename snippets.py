@@ -17,10 +17,10 @@ menu = """
 			<a href="/"> Home </a>
 		</li>
 		<li class = "%s">
-			<a href="tasks"> Tasks </a>
+			<a href="/tasks"> Tasks </a>
 		</li>
 		<li class = "%s">
-			<a href="scoreboard"> Scoreboard </a>
+			<a href="/scoreboard"> Scoreboard </a>
 		</li>
 	</ul>
 </div>
@@ -36,7 +36,6 @@ hint_top = """
 <div class="well">
 	<h3><b>Hints!</b></h3>
 		<div class="collapse-group">
-	</div>
 """
 
 snipp_hint = "<p> %s </p>"
@@ -55,7 +54,7 @@ task_row_h = """
 
 task_div = """
 <div class="task">
-	<p><a href= "task/{0}/{1}" class="btn {2}"> {0}. {3}</a></p>
+	<p><a href= "task/{0}/{1}" class="btn {2}"> {1}. {3}</a></p>
 </div>
 """
 
