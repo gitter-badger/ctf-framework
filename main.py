@@ -24,7 +24,7 @@ app = Flask(__name__)
 
 ttypes = loader.load_task_types()
 subttypes = loader.load_task_subtypes(ttypes)
-
+cache = loader.load_file_cache(ttypes, subttypes)
 
 def not_base_mod (module):
     if (module in config.base_modules):
@@ -99,11 +99,8 @@ def commit_flag(task_type, cost):
         flag.update(request.form['flag'])
 
         connection = sql.connect('score.db')
-
         q = "select team_name from score where task_type = ? and cost = ? and team_name = ?;"
-
         res = [r for r in connection.execute(q, [task_type, cost, team_name])]
-        print res
 
         if res:
                 return show_task(task_type, cost, notice='already_added')
@@ -124,18 +121,28 @@ def commit_flag(task_type, cost):
                 return show_task(task_type, cost, notice='fail')
     
 def show_task(task_type, cost, notice=''):
-    with open ( '/'.join( ['tasks', task_type, str(cost), 'desc' ] ), 'r') as f:
-        return ''.join([fhead('TASKS'),
-                            submit_bar,
-                            fnotice(notice),
-                            task_description.format( f.readline().strip('\n'),
-                                f.readline().strip('\n'),
-                                f.readline().strip('\n'),
-                                config.host_ip,
-                                config.tasks_port,
-                                '/'.join([task_type, str(cost)]))]
-                        )
+    try:
+        filename = cache[task_type][str(cost)]['filename']
+    except:
+        ttypes = loader.load_task_types()
+        subttypes = loader.load_task_subtypes(ttypes)
+        cache = loader.load_file_cache(ttypes, subttypes)
 
+    filename = cache[task_type][str(cost)]['filename']
+    taskname = cache[task_type][str(cost)]['taskname']
+    description = cache[task_type][str(cost)]['description']
+    flag = cache[task_type][str(cost)]['flag']
+
+    return ''.join([fhead('TASKS'),
+                        submit_bar,
+                        fnotice(notice),
+                        task_description.format( filename,
+                            taskname,
+                            description,
+                            config.host_ip,
+                            config.tasks_port,
+                            '/'.join([task_type, str(cost)]))]
+                    )
 
 @app.route('/tasks')
 def tasks():
