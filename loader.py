@@ -24,3 +24,9 @@ def load_file_cache(ttypes, subttypes):
             except IOError:
                 pass
     return cache
+
+def load_one_file_to_cache (ttype, subttype):
+    with open ('/'.join(['tasks', ttype, subttype, 'desc'])) as f:
+        return { 'filename': f.readline().strip('\n'), 'taskname': f.readline().strip('\n'),
+                    'description': f.readline().strip('\n'), 'flag': f.readline().strip('\n')
+                }

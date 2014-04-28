@@ -124,9 +124,7 @@ def show_task(task_type, cost, notice=''):
     try:
         filename = cache[task_type][str(cost)]['filename']
     except:
-        ttypes = loader.load_task_types()
-        subttypes = loader.load_task_subtypes(ttypes)
-        cache = loader.load_file_cache(ttypes, subttypes)
+        cache[task_type] = loader.load_one_file_to_cache(task_type, str(cost))
 
     filename = cache[task_type][str(cost)]['filename']
     taskname = cache[task_type][str(cost)]['taskname']
