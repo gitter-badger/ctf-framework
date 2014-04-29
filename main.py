@@ -8,7 +8,7 @@ import loader
 import config
 import logging
 import hashlib
-import secretConfig 
+import secretConfig
 
 import sqlite3 as sql
 
@@ -50,7 +50,7 @@ def fhints():
 
     if (config.hints_enabled) :
         reload(hints)
-        for var_hint in filter(not_base_mod,  dir(hints)):  
+        for var_hint in filter(not_base_mod,  dir(hints)):
             rhint += (snipp_hint % hints.rglobals()[var_hint])
     return rhint + hint_bottom
 
@@ -80,7 +80,7 @@ def scoreboard ():
     connection.close()
     return document + scoreboard_footer
 
-    
+
 @app.route('/task/<task_type>/<int:cost>', methods=['GET', 'POST'])
 def task(task_type, cost):
     if request.method == 'POST':
@@ -122,7 +122,7 @@ def commit_flag(task_type, cost):
             else:
                 connection.close()
                 return show_task(task_type, cost, notice='fail')
-    
+
 def show_task(task_type, cost, notice=''):
     try:
         filename = cache[task_type][str(cost)]['filename']
@@ -152,10 +152,6 @@ def tasks():
 
     document = fhead('TASKS') + fhints()
 
-    # If session isset the select * from table score
-    #   for each task which is solved by this session make color - green
-    # else do nothing 
-    # 
     connection = sql.connect('score.db')
     q = "select * from score;"
     res = [r for r in connection.execute(q)]
@@ -165,7 +161,7 @@ def tasks():
         for subttype in cache[ttype]:
                     btn_style = 'btn-primary'
                     for each in res:
-                        if (session.has_key('team_name') and session['team_name'] == each[0] 
+                        if (session.has_key('team_name') and session['team_name'] == each[0]
                             and ttype == each[1] and subttype == str(each[2])):
                             btn_style = 'btn-success'
 
