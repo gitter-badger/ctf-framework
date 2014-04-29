@@ -65,7 +65,11 @@ footer = """</body> </html>"""
 home = """
 <div class='well' align='center' >
 	<h2>Hello! And welcome to the MSU CTF!</h2> <h3>Today's CTF sponsors are Kalan, Destro, iad42 and PaulCher</h3><br>
-	<h4> May be there will be some more info in future, but not today!
+	<h2> Legend! </h2>
+	<h4> Unsolved tasks are marked with <button class='btn btn-primary'> Blue buttons </button> </h4>
+	<h4> Tasks solved by your team are marked with <button class='btn btn-success'> Green buttons </button> </h4>
+	<h4> Tasks solved by other teams are marked with <button class='btn btn-warning'> Yellow buttons </button> </h4>
+	<h2> Good luck and have fun! </h2>
 </div>
 """
 scoreboard_head = """

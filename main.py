@@ -8,6 +8,7 @@ import loader
 import config
 import logging
 import hashlib
+import secretConfig 
 
 import sqlite3 as sql
 
@@ -114,6 +115,8 @@ def commit_flag(task_type, cost):
                 )
                 connection.commit()
                 connection.close()
+
+                session['team_name'] = team_name
                 return show_task(task_type, cost, notice='success')
 
             else:
@@ -152,22 +155,33 @@ def tasks():
     # If session isset the select * from table score
     #   for each task which is solved by this session make color - green
     # else do nothing 
+    # 
+    connection = sql.connect('score.db')
+    q = "select * from score;"
+    res = [r for r in connection.execute(q)]
 
-    for ttype in ttypes:
+    for ttype in cache.keys():
         document += (task_row_h % ttype)
-        for subttype in subttypes[ttype]:
-            dp = '/'.join(['tasks', ttype, subttype, 'desc'])
-            if (os.path.isfile(dp)):
-                with open (dp, 'r') as f:
-                    f.readline()
+        for subttype in cache[ttype]:
+                    btn_style = 'btn-primary'
+                    for each in res:
+                        if (session.has_key('team_name') and session['team_name'] == each[0] 
+                            and ttype == each[1] and subttype == str(each[2])):
+                            btn_style = 'btn-success'
+
+                        elif (ttype == each[1] and subttype == str(each[2])):
+                            btn_style = 'btn-warning'
+
                     document += (task_div.format(
                                     ttype,
                                     subttype,
-                                    'btn-primary',
-                                    f.readline().strip('\n')
+                                    btn_style,
+                                    cache[ttype][subttype]['taskname']
                                     )
                                 )
         document += task_row_f
+
+    connection.close()
     return document + div_row_e + footer
 
 
@@ -180,4 +194,5 @@ if __name__ == '__main__':
     handler = RotatingFileHandler(config.errorlog, maxBytes=10000, backupCount=1)
     handler.setLevel(logging.INFO)
     app.logger.addHandler(handler)
+    app.secret_key = secretConfig.secret_key
     app.run(host=config.host, port=config.port)
