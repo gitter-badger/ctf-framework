@@ -1,6 +1,3 @@
 1. Logging of the flag submitting
-2. Mark solved tasks with green. Can be solved with usage of cookies.
-	* MUST DO this SAFE so that other teams can not see the tasks you solved.
-    * With brand net db fixed
-3. Logging of GET and POST server queries
-4. Update design
+2. Logging of GET and POST server queries
+3. Update design
