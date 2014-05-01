@@ -181,6 +181,28 @@ def tasks():
     return document + div_row_e + footer
 
 
+
+
+
+@app.route('/admin')
+def admin():
+    if (session.has_key('admin_token') and session['admin_token'] == secretConfig.secret_key):
+        return admin_panel()
+    else:
+        return admin_log_in()
+
+def admin_log_in (methods=['GET', 'POST']):
+    if request.method == 'GET':
+        login_page()
+    elif request.method == 'POST':
+        login_handler()
+
+def login_handler():
+    return ''
+
+def login_page():
+    return head + login_page + footer 
+
 @app.route('/')
 @app.route('/index')
 def index():
@@ -188,7 +210,7 @@ def index():
 
 if __name__ == '__main__':
     handler = RotatingFileHandler(config.errorlog, maxBytes=10000, backupCount=1)
-    handler.setLevel(logging.INFO)
+    handler.setLevel(logging.INFO)  
     app.logger.addHandler(handler)
     app.secret_key = secretConfig.secret_key
     app.run(host=config.host, port=config.port)
