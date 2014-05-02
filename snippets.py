@@ -168,7 +168,7 @@ admin_commit_table_cell = """
 </tr>	
 """
 
-admin_commit_table_footer = """ </table>
+admin_commit_table_footer = """ </table> """
 
 flag_added = """<div class="alert alert-success"><b> Well done! </b> Your flag has been added! </div>"""
 

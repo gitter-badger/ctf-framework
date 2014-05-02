@@ -98,29 +98,46 @@ def commit_flag(task_type, cost):
         team_name = request.form['team_name']
         flag = hashlib.new('md5')
         flag.update(request.form['flag'])
-
+        utime = time.strftime('%Y-%m-%d %H:%M:%S')
+        
         connection = sql.connect('score.db')
         q = "select team_name from score where task_type = ? and cost = ? and team_name = ?;"
         res = [r for r in connection.execute(q, [task_type, cost, team_name])]
+        log = open('logs/submission.log', 'a')
 
         if res:
+                log.write(' '.join (['2', team_name, request.form['flag'],
+                                    task_type + '/' +str(cost), utime, 
+                                    request.remote_addr ]))
+                log.close()
                 return show_task(task_type, cost, notice='already_added')
         else:
             if(o[3].strip('\n') == flag.hexdigest()):
                 q = 'insert into score values (?, ?, ?, ?);'
+                
+                
+                log.write(' '.join (['1', team_name, request.form['flag'],
+                                    task_type + '/' +str(cost), utime, 
+                                    request.remote_addr ]))
+
                 connection.execute(q, [team_name,
                     task_type,
                     cost,
-                    time.strftime('%Y-%m-%d %H:%M:%S')]
+                    utime]
                 )
                 connection.commit()
                 connection.close()
 
                 session['team_name'] = team_name
+                log.close()
                 return show_task(task_type, cost, notice='success')
 
             else:
                 connection.close()
+                log.write(' '.join (['1', team_name, request.form['flag'],
+                                    task_type + '/' +str(cost), utime, 
+                                    request.remote_addr ]))
+                log.close()
                 return show_task(task_type, cost, notice='fail')
 
 def show_task(task_type, cost, notice=''):
@@ -180,28 +197,31 @@ def tasks():
     connection.close()
     return document + div_row_e + footer
 
-
-
-
-
 @app.route('/admin')
 def admin():
-    if (session.has_key('admin_token') and session['admin_token'] == secretConfig.secret_key):
+    if (session.has_key('admin_token') and session['admin_token'] == secretConfig.admin_token):
         return admin_panel()
     else:
         return admin_log_in()
 
 def admin_log_in (methods=['GET', 'POST']):
     if request.method == 'GET':
-        login_page()
+        return login_page()
     elif request.method == 'POST':
-        login_handler()
+        return login_handler()
 
 def login_handler():
-    return ''
+    if (request.form['token'] == secretConfig.admin_token):
+        session['admin_token'] = secretConfig.admin_token
+    return admin()
+
 
 def login_page():
-    return head + login_page + footer 
+    return head + snip_login_page + footer
+
+def admin_panel():
+    return ''
+
 
 @app.route('/')
 @app.route('/index')
