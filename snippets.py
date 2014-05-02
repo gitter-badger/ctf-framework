@@ -132,6 +132,44 @@ task_description = """
 </div>
 """
 
+
+snip_login_page = """
+<div class='well'>
+	<center>
+		<form method=POST>
+			<input type='text' name='token' class='form-control' >
+		</form> 
+	</center>
+</div>
+"""
+
+admin_commit_table_head = """
+<table class='table table-bordered' width='80%' >
+				  <thead>
+					<tr>
+					  <th>Team Name</th>
+					  <th>Flag</th>
+					  <th>Task</th>
+					  <th>Time</th>
+					  <th>IP</th>
+					</tr>
+				  </thead>
+
+
+"""
+
+admin_commit_table_cell = """
+<tr class="{0}">
+	<td> {1} </td>
+	<td> {2} </td>
+	<td> {3} </td>
+	<td> {4} </td>
+	<td> {5} </td>
+</tr>	
+"""
+
+admin_commit_table_footer = """ </table>
+
 flag_added = """<div class="alert alert-success"><b> Well done! </b> Your flag has been added! </div>"""
 
 flag_declined = """<div class="alert alert-danger"><b> Oh snap! </b> Wrong flag! Try again later!  </div>"""
