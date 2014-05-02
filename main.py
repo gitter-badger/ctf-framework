@@ -99,7 +99,7 @@ def commit_flag(task_type, cost):
         flag = hashlib.new('md5')
         flag.update(request.form['flag'])
         utime = time.strftime('%Y-%m-%d %H:%M:%S')
-        
+
         connection = sql.connect('score.db')
         q = "select team_name from score where task_type = ? and cost = ? and team_name = ?;"
         res = [r for r in connection.execute(q, [task_type, cost, team_name])]
@@ -208,19 +208,15 @@ def admin_log_in (methods=['GET', 'POST']):
     if request.method == 'GET':
         return login_page()
     elif request.method == 'POST':
-        return login_handler()
-
-def login_handler():
-    if (request.form['token'] == secretConfig.admin_token):
-        session['admin_token'] = secretConfig.admin_token
-    return admin()
-
+        if (request.form['token'] == secretConfig.admin_token):
+            session['admin_token'] = secretConfig.admin_token
+        return redirect(url_for('admin'))
 
 def login_page():
     return head + snip_login_page + footer
 
 def admin_panel():
-    return ''
+    return head + admin_commit_table_cell + admin_commit_table_footer
 
 
 @app.route('/')
