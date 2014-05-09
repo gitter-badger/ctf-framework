@@ -80,7 +80,6 @@ def scoreboard ():
     connection.close()
     return document + scoreboard_footer
 
-
 @app.route('/task/<task_type>/<int:cost>', methods=['GET', 'POST'])
 def task(task_type, cost):
     if request.method == 'POST':
@@ -103,22 +102,20 @@ def commit_flag(task_type, cost):
         connection = sql.connect('score.db')
         q = "select team_name from score where task_type = ? and cost = ? and team_name = ?;"
         res = [r for r in connection.execute(q, [task_type, cost, team_name])]
-        log = open('logs/submission.log', 'a')
+        log = open('logs/msuctf-submit.log', 'a')
 
         if res:
-                log.write(' '.join (['2', team_name, request.form['flag'],
+                log.write(' '.join (['warning', team_name, request.form['flag'],
                                     task_type + '/' +str(cost), utime, 
-                                    request.remote_addr ]))
+                                    request.remote_addr, '\notice' ]))
                 log.close()
                 return show_task(task_type, cost, notice='already_added')
         else:
             if(o[3].strip('\n') == flag.hexdigest()):
                 q = 'insert into score values (?, ?, ?, ?);'
-                
-                
-                log.write(' '.join (['1', team_name, request.form['flag'],
+                log.write(' '.join (['success', team_name, request.form['flag'],
                                     task_type + '/' +str(cost), utime, 
-                                    request.remote_addr ]))
+                                    request.remote_addr, '\n']))
 
                 connection.execute(q, [team_name,
                     task_type,
@@ -134,9 +131,9 @@ def commit_flag(task_type, cost):
 
             else:
                 connection.close()
-                log.write(' '.join (['1', team_name, request.form['flag'],
+                log.write(' '.join (['fail', team_name, request.form['flag'],
                                     task_type + '/' +str(cost), utime, 
-                                    request.remote_addr ]))
+                                    request.remote_addr, '\n' ]))
                 log.close()
                 return show_task(task_type, cost, notice='fail')
 
@@ -197,14 +194,14 @@ def tasks():
     connection.close()
     return document + div_row_e + footer
 
-@app.route('/admin')
+@app.route('/admin', methods=['GET', 'POST'])
 def admin():
     if (session.has_key('admin_token') and session['admin_token'] == secretConfig.admin_token):
         return admin_panel()
     else:
         return admin_log_in()
 
-def admin_log_in (methods=['GET', 'POST']):
+def admin_log_in(methods=['GET', 'POST']):
     if request.method == 'GET':
         return login_page()
     elif request.method == 'POST':
@@ -212,12 +209,23 @@ def admin_log_in (methods=['GET', 'POST']):
             session['admin_token'] = secretConfig.admin_token
         return redirect(url_for('admin'))
 
+def admin_log_out():
+    session['admin_token'] = ''
+    return redirect(url_for('index'))
+
 def login_page():
     return head + snip_login_page + footer
 
 def admin_panel():
-    return head + admin_commit_table_cell + admin_commit_table_footer
+    document = head + admin_commit_table_head
 
+    with open('/logs/msuctf-submit.log') as f:
+        o = f.readlines()
+
+    for each in o:
+        for elem in each.split(' '):
+            document += admin_commit_table_cell.format(elem[0], elem[1], elem[2], elem[3], elem[4], elem[5])
+    return document + admin_commit_table_footer
 
 @app.route('/')
 @app.route('/index')
