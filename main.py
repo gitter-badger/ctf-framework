@@ -57,7 +57,7 @@ def fhints():
 def fnotice (notice):
     return {
         'success': flag_added,
-        'fail': flag_declined,
+        'danger': flag_declined,
         'already_added': flag_already_been_added,
         '' : ''
     }[notice]
@@ -104,14 +104,15 @@ def commit_flag(task_type, cost):
         res = [r for r in connection.execute(q, [task_type, cost, team_name])]
         log = open('logs/msuctf-submit.log', 'a')
 
-        if res:
-                log.write(' '.join (['warning', team_name, request.form['flag'],
-                                    task_type + '/' +str(cost), utime, 
-                                    request.remote_addr, '\notice' ]))
-                log.close()
-                return show_task(task_type, cost, notice='already_added')
-        else:
-            if(o[3].strip('\n') == flag.hexdigest()):
+        
+        if(o[3].strip('\n') == flag.hexdigest()):
+            if res:
+                    log.write(' '.join (['warning', team_name, request.form['flag'],
+                                        task_type + '/' +str(cost), utime, 
+                                        request.remote_addr, '\n' ]))
+                    log.close()
+                    return show_task(task_type, cost, notice='already_added')
+            else:
                 q = 'insert into score values (?, ?, ?, ?);'
                 log.write(' '.join (['success', team_name, request.form['flag'],
                                     task_type + '/' +str(cost), utime, 
@@ -129,13 +130,13 @@ def commit_flag(task_type, cost):
                 log.close()
                 return show_task(task_type, cost, notice='success')
 
-            else:
-                connection.close()
-                log.write(' '.join (['fail', team_name, request.form['flag'],
-                                    task_type + '/' +str(cost), utime, 
-                                    request.remote_addr, '\n' ]))
-                log.close()
-                return show_task(task_type, cost, notice='fail')
+        else:
+            connection.close()
+            log.write(' '.join (['danger', team_name, request.form['flag'],
+                                task_type + '/' +str(cost), utime, 
+                                request.remote_addr, '\n' ]))
+            log.close()
+            return show_task(task_type, cost, notice='danger')
 
 def show_task(task_type, cost, notice=''):
     try:
@@ -219,12 +220,13 @@ def login_page():
 def admin_panel():
     document = head + admin_commit_table_head
 
-    with open('/logs/msuctf-submit.log') as f:
+    with open('logs/msuctf-submit.log') as f:
         o = f.readlines()
 
     for each in o:
-        for elem in each.split(' '):
-            document += admin_commit_table_cell.format(elem[0], elem[1], elem[2], elem[3], elem[4], elem[5])
+        if each:
+            each = each.split()
+            document += admin_commit_table_cell.format(each[0], each[1], each[2], each[3], each[4], each[5], each[6])
     return document + admin_commit_table_footer
 
 @app.route('/')
