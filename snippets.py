@@ -4,7 +4,7 @@ head = """<!DOCTYPE html>
 	<title> CTF@MSU </title>
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
-        <link rel="icon" href="data:;base64,=">
+    <link rel="icon" href="data:;base64,=">
 	<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 </head>
 <body>
@@ -48,24 +48,24 @@ div_row_h = "<div class='row' style='float: center;'>"
 div_row_e = "</div>"
 
 task_row_h = """
-	<div style="height: 250px;" class="col-xs-4 col-md-4" align="center">
-	  <h2>%s</h2>
+<div style="height: 250px;" class="col-xs-4 col-md-4;" align="center">
+  <h2>%s</h2>
 """	
 
 task_div = """
-<div class="task">
-	<p><a href= "task/{0}/{1}" class="btn {2}"> {1}. {3}</a></p>
-</div>
+		<div class="task">
+			<p><a href= "task/{0}/{1}" class="btn {2}"> {1}. {3}</a></p>
+		</div>
 """
 
-task_row_f = """ </div>"""
+task_row_f = """</div>\n"""
 
 footer = """</body> </html>"""
 
 home = """
 <div class='well' align='center' >
-	<h2>Hello! And welcome to the MSU CTF!</h2> <h3>Today's CTF sponsors are Kalan, Destro, iad42 and PaulCher</h3><br>
-	<h2> Legend! </h2>
+	<h2>Hello! And welcome to the MSU CTF!</h2> <h3>Today's CTF sponsors are Kalan, neex, korsse, Destro, iad42 and PaulCher</h3><br><br>
+	<h2> The Legend! </h2>
 	<h4> Unsolved tasks are marked with <button class='btn btn-primary'> Blue buttons </button> </h4>
 	<h4> Tasks solved by your team are marked with <button class='btn btn-success'> Green buttons </button> </h4>
 	<h4> Tasks solved by other teams are marked with <button class='btn btn-warning'> Yellow buttons </button> </h4>
@@ -97,7 +97,6 @@ scoreboard_footer = """
 				</table>
 </div>
 """
-
 
 submit_bar = """
 <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -144,6 +143,23 @@ snip_login_page = """
 """
 
 admin_commit_table_head = """
+<table class='table table-bord
+	<a target="_blank" href= "http://{3}:{4}/{5}/{0}"  class="link"> {0} </a>
+</div>
+"""
+
+
+snip_login_page = """
+<div class='well'>
+	<center>
+		<form method=POST>
+			<input type='text' name='token' class='form-control' >
+		</form> 
+	</center>
+</div>
+"""
+
+admin_commit_table_head = """
 <table class='table table-bordered' width='80%' >
 				  <thead>
 					<tr>
@@ -167,11 +183,52 @@ admin_commit_table_cell = """
 	<td> {6} </td>
 </tr>	
 """
-
 admin_commit_table_footer = """ </table> """
-
 flag_added = """<div class="alert alert-success"><b> Well done! </b> Your flag has been added! </div>"""
-
 flag_declined = """<div class="alert alert-danger"><b> Oh snap! </b> Wrong flag! Try again later!  </div>"""
-
 flag_already_been_added = """<div class="alert alert-warning"><b> Warning! </b> The flag has already been added! The incident will be reported!  </div>"""
+
+admin_menu = """
+<div class='container'> ered' width='80%' >
+				  <thead>
+					<tr>
+					  <th>Team Name</th>
+					  <th>Flag</th>
+					  <th>Task</th>
+					  <th>Time</th>
+					  <th>IP</th>
+					</tr>
+				  </thead>
+
+
+"""
+
+admin_commit_table_cell = """
+<tr class="{0}">
+	<td> {1} </td>
+	<td> {2} </td>
+	<td> {3} </td>	
+	<td> {4} {5} </td>
+	<td> {6} </td>
+</tr>	
+"""
+admin_commit_table_footer = """ </table> """
+flag_added = """<div class="alert alert-success"><b> Well done! </b> Your flag has been added! </div>"""
+flag_declined = """<div class="alert alert-danger"><b> Oh snap! </b> Wrong flag! Try again later!  </div>"""
+flag_already_been_added = """<div class="alert alert-warning"><b> Warning! </b> The flag has already been added! The incident will be reported!  </div>"""
+
+admin_menu = """<div class='jumbotron container' style='padding-top:200px; border-bottom: solid 1px black;border-right: solid 1px black;border-left: solid 1px black;'> 
+<center>
+	<ul class="nav nav-pills">
+		<li class = "active">
+			<a href="/admin/commits"> Commits </a>
+		</li>
+		<li class = "active">
+			<a href="/admin/checksum"> Checksum </a>
+		</li>
+		<li class = "active">
+			<a href="/admin/logout"> Log Out </a>
+		</li>
+	</ul>
+</center>
+</div>"""

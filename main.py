@@ -1,6 +1,7 @@
 #!/usr/bin/python2
 
 import os
+import re
 import sys
 import time
 import hints
@@ -15,10 +16,9 @@ import sqlite3 as sql
 from snippets import *
 
 from flask import Flask, request, session, \
-    g, redirect, url_for, abort, \
-    render_template, flash
+    g, redirect, url_for, abort
 
-from urlparse import urlparse, parse_qs
+from urlparse import urlparse
 from logging.handlers import RotatingFileHandler
 
 app = Flask(__name__)
@@ -131,11 +131,20 @@ def commit_flag(task_type, cost):
                 return show_task(task_type, cost, notice='success')
 
         else:
-            connection.close()
-            log.write(' '.join (['danger', team_name, request.form['flag'],
-                                task_type + '/' +str(cost), utime, 
+            if re.match( '[^\w\*]', request.form['flag']) and re.match( '[^\w\*]', team_name):
+                print "ATTACK_ATTEMPT"
+                attack_log = open('logs/msuctf-attack.log','a')
+                attack_log.write(' '.join ([team_name, request.form['flag'],
+                                task_type + '/' + str(cost), utime, 
                                 request.remote_addr, '\n' ]))
-            log.close()
+                attack_log.close()
+            else:
+
+                connection.close()
+                log.write(' '.join (['danger', team_name, request.form['flag'],
+                                    task_type + '/' +str(cost), utime, 
+                                    request.remote_addr, '\n' ]))
+                log.close()
             return show_task(task_type, cost, notice='danger')
 
 def show_task(task_type, cost, notice=''):
@@ -195,14 +204,14 @@ def tasks():
     connection.close()
     return document + div_row_e + footer
 
-@app.route('/admin', methods=['GET', 'POST'])
+@app.route('/admin/', methods=['GET', 'POST'])
 def admin():
     if (session.has_key('admin_token') and session['admin_token'] == secretConfig.admin_token):
-        return admin_panel()
+        return _panel()
     else:
-        return admin_log_in()
+        return _log_in()
 
-def admin_log_in(methods=['GET', 'POST']):
+def _log_in(methods=['GET', 'POST']):
     if request.method == 'GET':
         return login_page()
     elif request.method == 'POST':
@@ -210,14 +219,19 @@ def admin_log_in(methods=['GET', 'POST']):
             session['admin_token'] = secretConfig.admin_token
         return redirect(url_for('admin'))
 
-def admin_log_out():
+@app.route('/admin/logout')
+def _log_out():
     session['admin_token'] = ''
     return redirect(url_for('index'))
 
 def login_page():
     return head + snip_login_page + footer
 
-def admin_panel():
+def _panel():
+    return head + admin_menu + footer
+
+@app.route('/admin/commits')
+def _commit_table():
     document = head + admin_commit_table_head
 
     with open('logs/msuctf-submit.log') as f:
@@ -240,3 +254,4 @@ if __name__ == '__main__':
     app.logger.addHandler(handler)
     app.secret_key = secretConfig.secret_key
     app.run(host=config.host, port=config.port)
+
