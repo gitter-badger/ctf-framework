@@ -14,12 +14,11 @@ import secretConfig
 import sqlite3 as sql
 
 from snippets import *
+from urlparse import urlparse
+from logging.handlers import RotatingFileHandler
 
 from flask import Flask, request, session, \
     g, redirect, url_for, abort
-
-from urlparse import urlparse
-from logging.handlers import RotatingFileHandler
 
 app = Flask(__name__)
 
@@ -28,9 +27,7 @@ subttypes = loader.load_task_subtypes(ttypes)
 cache = loader.load_file_cache(ttypes, subttypes)
 
 def not_base_mod (module):
-    if (module in config.base_modules):
-        return False
-    return True
+    return False if module in config.base_modules else True
 
 def ftitle(var_title):
     return {
@@ -40,18 +37,18 @@ def ftitle(var_title):
     }[var_title]
 
 def fhead(var_title):
-    return ''.join([head, (menu % ftitle(var_title)), (title % var_title)])
+    return ''.join([head, (menu.format(ftitle(var_title))), (title.format(var_title))])
 
 def fhints():
-    if (not config.hints_enabled):
+    if not config.hints_enabled:
         return hints_disabled
 
     rhint = hint_top
 
-    if (config.hints_enabled) :
+    if config.hints_enabled:
         reload(hints)
         for var_hint in filter(not_base_mod,  dir(hints)):
-            rhint += (snipp_hint % hints.rglobals()[var_hint])
+            rhint += (snipp_hint.format(hints.rglobals()[var_hint]))
     return rhint + hint_bottom
 
 def fnotice (notice):
@@ -64,8 +61,8 @@ def fnotice (notice):
 
 @app.route('/scoreboard')
 def scoreboard ():
-    if (not config.scoreboard_enabled):
-        return 'Karim says: \'Stop fapping on the scoreboard !\' '
+    if not config.scoreboard_enabled:
+        return 'Karim says: \'Stop fapping on the scoreboard !\''
 
     connection = sql.connect('score.db')
     q = 'select team_name, sum(cost) from score group by team_name order by sum(cost) DESC, date;'
@@ -75,7 +72,7 @@ def scoreboard ():
     j = 0
     for row in res:
         j += 1
-        document += scoreboard_cell % (j, row[0], row[1])
+        document += scoreboard_cell.format(j, row[0], row[1])
 
     connection.close()
     return document + scoreboard_footer
@@ -87,64 +84,74 @@ def task(task_type, cost):
     elif request.method == 'GET':
         return show_task(task_type, cost)
 
+def commit_success(request, task_type, cost):
+    connection = sql.connect('score.db')
+    log = open('logs/msuctf-submit.log', 'a')
+    q = 'insert into score values (?, ?, ?, ?);'
+    log.write(' '.join (['success', request.form['team_name'], request.form['flag'],
+        task_type + str(cost), time.strftime('%Y-%m-%d %H:%M:%S'),
+        request.remote_addr, '\n']))
+
+    connection.execute(q, [request.form['team_name'],
+        task_type,
+        cost,
+        utime]
+    )
+    connection.commit()
+    connection.close()
+
+    session['team_name'] = request.form['team_name']
+    log.close()
+
+    return show_task(task_type, cost, notice='success')
+
+def commit_already_added(request, task_type, cost):
+    log = open('logs/msuctf-submit.log', 'a')
+    log.write(' '.join (['warning', request.form['team_name'], request.form['flag'],
+        os.path.join(task_type, str(cost)), time.strftime('%Y-%m-%d %H:%M:%S'),
+        request.remote_addr, '\n' ])
+    )
+    log.close()
+    return show_task(task_type, cost, notice='already_added')
+
+def commit_fail(request, task_type, cost):
+    log = open('logs/msuctf-submit.log', 'a')
+    log.write(' '.join (['danger', request.form['team_name'], request.form['flag'],
+                                task_type + '/' + str(cost), utime,
+                                request.remote_addr, '\n' ]))
+    log.close()
+    return show_task(task_type, cost, notice='danger')
+
+def commit_attack_attempt(request, task_type, cost):
+    print "ATTACK_ATTEMPT"
+    attack_log = open('logs/msuctf-attack.log','a')
+    attack_log.write(' '.join ([request.form['team_name'], request.form['flag'],
+                    task_type + '/' + str(cost), time.strftime('%Y-%m-%d %H:%M:%S'),
+                    request.remote_addr, '\n' ]))
+    attack_log.close()
+    return show_task(task_type, cost, notice='danger')
+
 def commit_flag(task_type, cost):
-    if (not config.tasks_enabled):
+    if not config.tasks_enabled:
         return 'You are trying to submit flag after CTF is over. The incedent will be reported!'
 
-    with open ('/'. join(['tasks/', task_type, str(cost), 'desc']), 'r') as f:
+    with open (os.path.join('tasks/', task_type, str(cost), 'desc'), 'r') as f:
         o = f.readlines()
 
-        team_name = request.form['team_name']
         flag = hashlib.new('md5')
         flag.update(request.form['flag'])
-        utime = time.strftime('%Y-%m-%d %H:%M:%S')
 
-        connection = sql.connect('score.db')
         q = "select team_name from score where task_type = ? and cost = ? and team_name = ?;"
-        res = [r for r in connection.execute(q, [task_type, cost, team_name])]
-        log = open('logs/msuctf-submit.log', 'a')
+        connection = sql.connect('score.db')
+        res = [r for r in connection.execute(q, [task_type, cost, request.form['team_name']])]
 
-        
-        if(o[3].strip('\n') == flag.hexdigest()):
-            if res:
-                    log.write(' '.join (['warning', team_name, request.form['flag'],
-                                        task_type + '/' +str(cost), utime, 
-                                        request.remote_addr, '\n' ]))
-                    log.close()
-                    return show_task(task_type, cost, notice='already_added')
-            else:
-                q = 'insert into score values (?, ?, ?, ?);'
-                log.write(' '.join (['success', team_name, request.form['flag'],
-                                    task_type + '/' +str(cost), utime, 
-                                    request.remote_addr, '\n']))
-
-                connection.execute(q, [team_name,
-                    task_type,
-                    cost,
-                    utime]
-                )
-                connection.commit()
-                connection.close()
-
-                session['team_name'] = team_name
-                log.close()
-                return show_task(task_type, cost, notice='success')
-
+        if re.match('[^\w\*]', request.form['flag']) and re.match('[^\w\*]', request.form['team_name']) :
+            return commit_attack_attempt(request, task_type, cost)
+        if res:
+            return commit_already_added(request, task_type, cost)
+        if o[3].strip('\n') == flag.hexdigest():
+            return commit_success(request, task_type, cost)
         else:
-            if re.match( '[^\w\*]', request.form['flag']) and re.match( '[^\w\*]', team_name):
-                print "ATTACK_ATTEMPT"
-                attack_log = open('logs/msuctf-attack.log','a')
-                attack_log.write(' '.join ([team_name, request.form['flag'],
-                                task_type + '/' + str(cost), utime, 
-                                request.remote_addr, '\n' ]))
-                attack_log.close()
-            else:
-
-                connection.close()
-                log.write(' '.join (['danger', team_name, request.form['flag'],
-                                    task_type + '/' +str(cost), utime, 
-                                    request.remote_addr, '\n' ]))
-                log.close()
             return show_task(task_type, cost, notice='danger')
 
 def show_task(task_type, cost, notice=''):
@@ -158,47 +165,56 @@ def show_task(task_type, cost, notice=''):
     description = cache[task_type][str(cost)]['description']
     flag = cache[task_type][str(cost)]['flag']
 
-    return ''.join([fhead('TASKS'),
-                        submit_bar,
-                        fnotice(notice),
-                        task_description.format( filename,
-                            taskname,
-                            description,
-                            config.host_ip,
-                            config.tasks_port,
-                            '/'.join([task_type, str(cost)]))]
+    if filename:
+        return show_lading_file(notice)
+    else:
+        return show_faceless(notice)
+
+
+def show_landing_file(notice):
+    return ''.join([fhead('TASKS'), submit_bar, fnotice(notice),
+    task_description.format(filename,
+                        taskname,
+                        description,
+                        config.host_ip,
+                        config.tasks_port,
+                        os.path.join(task_type, str(cost)))]
                     )
+
+def show_faceless(notice):
+    return ''.join([fhead('TASKS'), submit_bar, fnotice(notice),
+        faceless_task.format(taskname, description))
 
 @app.route('/tasks')
 def tasks():
-    if (not config.tasks_enabled):
+    if not config.tasks_enabled:
         return 'ARGHHHHHH..... Tasks are closed.'
 
     document = fhead('TASKS') + fhints()
 
     connection = sql.connect('score.db')
-    q = "select * from score;"
+    q = 'select * from score;'
     res = [r for r in connection.execute(q)]
 
     for ttype in cache.keys():
-        document += (task_row_h % ttype)
+        document += (task_row_h.format(ttype))
         for subttype in cache[ttype]:
-                    btn_style = 'btn-primary'
-                    for each in res:
-                        if (session.has_key('team_name') and session['team_name'] == each[0]
-                            and ttype == each[1] and subttype == str(each[2])):
-                            btn_style = 'btn-success'
+            btn_style = 'btn-primary'
+            for each in res:
+                if (session.has_key('team_name') and session['team_name'] == each[0]
+                    and ttype == each[1] and subttype == str(each[2])):
+                    btn_style = 'btn-success'
 
-                        elif (ttype == each[1] and subttype == str(each[2])):
-                            btn_style = 'btn-warning'
+                elif ttype == each[1] and subttype == str(each[2]):
+                    btn_style = 'btn-warning'
 
-                    document += (task_div.format(
-                                    ttype,
-                                    subttype,
-                                    btn_style,
-                                    cache[ttype][subttype]['taskname']
-                                    )
-                                )
+            document += (task_div.format(
+                        ttype,
+                        subttype,
+                        btn_style,
+                        cache[ttype][subttype]['taskname']
+                        )
+                    )
         document += task_row_f
 
     connection.close()
@@ -206,7 +222,7 @@ def tasks():
 
 @app.route('/admin/', methods=['GET', 'POST'])
 def admin():
-    if (session.has_key('admin_token') and session['admin_token'] == secretConfig.admin_token):
+    if session.has_key('admin_token') and session['admin_token'] == secretConfig.admin_token:
         return _panel()
     else:
         return _log_in()
@@ -214,10 +230,11 @@ def admin():
 def _log_in(methods=['GET', 'POST']):
     if request.method == 'GET':
         return login_page()
-    elif request.method == 'POST':
-        if (request.form['token'] == secretConfig.admin_token):
-            session['admin_token'] = secretConfig.admin_token
+    elif request.method == 'POST' and request.form['token'] == secretConfig.admin_token:
+        session['admin_token'] = secretConfig.admin_token
         return redirect(url_for('admin'))
+    else:
+        return redirect(url_for('index'))
 
 @app.route('/admin/logout')
 def _log_out():
@@ -250,7 +267,7 @@ def index():
 
 if __name__ == '__main__':
     handler = RotatingFileHandler(config.errorlog, maxBytes=10000, backupCount=1)
-    handler.setLevel(logging.INFO)  
+    handler.setLevel(logging.INFO)
     app.logger.addHandler(handler)
     app.secret_key = secretConfig.secret_key
     app.run(host=config.host, port=config.port)

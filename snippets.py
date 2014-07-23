@@ -13,13 +13,13 @@ head = """<!DOCTYPE html>
 menu = """
 <div style="padding-top: 100px;" class="container">
 	<ul class="nav nav-pills">
-		<li class = "%s">
+		<li class = "{0}">
 			<a href="/"> Home </a>
 		</li>
-		<li class = "%s">
+		<li class = "{1}">
 			<a href="/tasks"> Tasks </a>
 		</li>
-		<li class = "%s">
+		<li class = "{2}">
 			<a href="/scoreboard"> Scoreboard </a>
 		</li>
 	</ul>
@@ -28,7 +28,7 @@ menu = """
 
 title = """
 <div class="container">
-	<h1>%s</h1>
+	<h1>{1}</h1>
 </div>
 """
 
@@ -38,7 +38,7 @@ hint_top = """
 		<div class="collapse-group">
 """
 
-snipp_hint = "<p> %s </p>"
+snipp_hint = "<p> {0} </p>"
 
 hints_disabled = "<p> <b>  Sorry</b>, but hints are not available yet! </p>"
 
@@ -49,8 +49,8 @@ div_row_e = "</div>"
 
 task_row_h = """
 <div style="height: 250px;" class="col-xs-4 col-md-4;" align="center">
-  <h2>%s</h2>
-"""	
+  <h2>{0}</h2>
+"""
 
 task_div = """
 		<div class="task">
@@ -87,9 +87,9 @@ scoreboard_head = """
 
 scoreboard_cell = """
 					<tr>
-	        			  <td>%s</td>
-					  <td>%s</td>
-					  <td>%s</td>
+	        			  <td>{0}</td>
+					  <td>{1}</td>
+					  <td>{2}</td>
 					</tr>
 """
 scoreboard_footer = """
@@ -131,30 +131,29 @@ task_description = """
 </div>
 """
 
+faceless_task = """
+<div class='well'>
+    <h3> {1} </h3>
+    {2}
+</div>
+"""
 
 snip_login_page = """
 <div class='well'>
 	<center>
 		<form method=POST>
 			<input type='text' name='token' class='form-control' >
-		</form> 
+		</form>
 	</center>
 </div>
 """
 
-admin_commit_table_head = """
-<table class='table table-bord
-	<a target="_blank" href= "http://{3}:{4}/{5}/{0}"  class="link"> {0} </a>
-</div>
-"""
-
-
 snip_login_page = """
 <div class='well'>
 	<center>
 		<form method=POST>
 			<input type='text' name='token' class='form-control' >
-		</form> 
+		</form>
 	</center>
 </div>
 """
@@ -178,46 +177,31 @@ admin_commit_table_cell = """
 <tr class="{0}">
 	<td> {1} </td>
 	<td> {2} </td>
-	<td> {3} </td>	
+	<td> {3} </td>
 	<td> {4} {5} </td>
 	<td> {6} </td>
-</tr>	
+</tr>
 """
 admin_commit_table_footer = """ </table> """
 flag_added = """<div class="alert alert-success"><b> Well done! </b> Your flag has been added! </div>"""
 flag_declined = """<div class="alert alert-danger"><b> Oh snap! </b> Wrong flag! Try again later!  </div>"""
 flag_already_been_added = """<div class="alert alert-warning"><b> Warning! </b> The flag has already been added! The incident will be reported!  </div>"""
-
-admin_menu = """
-<div class='container'> ered' width='80%' >
-				  <thead>
-					<tr>
-					  <th>Team Name</th>
-					  <th>Flag</th>
-					  <th>Task</th>
-					  <th>Time</th>
-					  <th>IP</th>
-					</tr>
-				  </thead>
-
-
-"""
 
 admin_commit_table_cell = """
 <tr class="{0}">
 	<td> {1} </td>
 	<td> {2} </td>
-	<td> {3} </td>	
+	<td> {3} </td>
 	<td> {4} {5} </td>
 	<td> {6} </td>
-</tr>	
+</tr>
 """
 admin_commit_table_footer = """ </table> """
 flag_added = """<div class="alert alert-success"><b> Well done! </b> Your flag has been added! </div>"""
 flag_declined = """<div class="alert alert-danger"><b> Oh snap! </b> Wrong flag! Try again later!  </div>"""
 flag_already_been_added = """<div class="alert alert-warning"><b> Warning! </b> The flag has already been added! The incident will be reported!  </div>"""
 
-admin_menu = """<div class='jumbotron container' style='padding-top:200px; border-bottom: solid 1px black;border-right: solid 1px black;border-left: solid 1px black;'> 
+admin_menu = """<div class='jumbotron container' style='padding-top:200px; border-bottom: solid 1px black;border-right: solid 1px black;border-left: solid 1px black;'>
 <center>
 	<ul class="nav nav-pills">
 		<li class = "active">

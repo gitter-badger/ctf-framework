@@ -1,7 +1,7 @@
-	# Config file for this amazing system
+# Config file for this amazing system
 
 host = "0.0.0.0" # broadcast range
-host_ip = "10.0.0.1" # ip_addr of interface you are currently using
+host_ip = "127.0.0.1" # ip_addr of interface you are currently using
 port = 8088
 tasks_port = 8888
 
