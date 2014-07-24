@@ -27,7 +27,7 @@ subttypes = loader.load_task_subtypes(ttypes)
 cache = loader.load_file_cache(ttypes, subttypes)
 
 def not_base_mod (module):
-    return False if module in config.base_modules else True
+    return not module in config.base_modules
 
 def ftitle(var_title):
     return {
