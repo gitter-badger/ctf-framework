@@ -6,7 +6,6 @@ import sys
 import time
 import hints
 import loader
-import config
 import logging
 import hashlib
 import secretConfig
@@ -26,8 +25,11 @@ ttypes = loader.load_task_types()
 subttypes = loader.load_task_subtypes(ttypes)
 cache = loader.load_file_cache(ttypes, subttypes)
 
+with open('config.json', 'r') as json_data:
+        cfg = json.load(json_data)
+
 def not_base_mod (module):
-    return not module in config.base_modules
+    return not module in cfg['base_modules']
 
 def ftitle(var_title):
     return {
@@ -40,12 +42,12 @@ def fhead(var_title):
     return ''.join([head, (menu.format(ftitle(var_title))), (title.format(var_title))])
 
 def fhints():
-    if not config.hints_enabled:
+    if not cfg['hints_enabled']:
         return hints_disabled
 
     rhint = hint_top
 
-    if config.hints_enabled:
+    if cfg['hints_enabled']:
         reload(hints)
         for var_hint in filter(not_base_mod,  dir(hints)):
             rhint += (snipp_hint.format(hints.rglobals()[var_hint]))
@@ -61,7 +63,7 @@ def fnotice (notice):
 
 @app.route('/scoreboard')
 def scoreboard ():
-    if not config.scoreboard_enabled:
+    if not cfg['scoreboard_enabled']:
         return 'Karim says: \'Stop fapping on the scoreboard !\''
 
     connection = sql.connect('score.db')
@@ -132,7 +134,7 @@ def commit_attack_attempt(request, task_type, cost):
     return show_task(task_type, cost, notice='danger')
 
 def commit_flag(task_type, cost):
-    if not config.tasks_enabled:
+    if not cfg['tasks_enabled']:
         return 'You are trying to submit flag after CTF is over. The incedent will be reported!'
 
     with open (os.path.join('tasks/', task_type, str(cost), 'desc'), 'r') as f:
@@ -176,8 +178,8 @@ def show_landing_file(notice):
     task_description.format(filename,
                         taskname,
                         description,
-                        config.host_ip,
-                        config.tasks_port,
+                        cfg['host_ip'],
+                        cfg['tasks_port'],
                         os.path.join(task_type, str(cost)))]
                     )
 
@@ -187,7 +189,7 @@ def show_faceless(notice):
 
 @app.route('/tasks')
 def tasks():
-    if not config.tasks_enabled:
+    if not cfg['tasks_enabled']:
         return 'ARGHHHHHH..... Tasks are closed.'
 
     document = fhead('TASKS') + fhints()
@@ -266,9 +268,9 @@ def index():
     return fhead('HOME') + home + footer
 
 if __name__ == '__main__':
-    handler = RotatingFileHandler(config.errorlog, maxBytes=10000, backupCount=1)
+    handler = RotatingFileHandler(cfg['errorlog'], maxBytes=10000, backupCount=1)
     handler.setLevel(logging.INFO)
     app.logger.addHandler(handler)
     app.secret_key = secretConfig.secret_key
-    app.run(host=config.host, port=config.port)
+    app.run(host=cfg['host'], port=cfg['port'])
 
