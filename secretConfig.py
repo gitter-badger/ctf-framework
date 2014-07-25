@@ -1,2 +1,0 @@
-secret_key = "917a34072663f9c8beea3b45e129ce88ab6e4ae9785c875b9875acbe5cae9affe957ef37fea9"
-admin_token = "WJeMWtx8qEo8mKi4}sbd*jwP5RJXgu5chzQG1pakkr3ec|WG56rev#ePdq@}EKji"

@@ -8,7 +8,6 @@ import hints
 import loader
 import logging
 import hashlib
-import secretConfig
 
 import sqlite3 as sql
 
@@ -26,7 +25,9 @@ subttypes = loader.load_task_subtypes(ttypes)
 cache = loader.load_file_cache(ttypes, subttypes)
 
 with open('config.json', 'r') as json_data:
-        cfg = json.load(json_data)
+    cfg = json.load(json_data)
+with open ('secretConfig.json', 'r') as json_data:
+    secret_cfg = json.load(json_data)
 
 def not_base_mod (module):
     return not module in cfg['base_modules']
@@ -224,7 +225,7 @@ def tasks():
 
 @app.route('/admin/', methods=['GET', 'POST'])
 def admin():
-    if session.has_key('admin_token') and session['admin_token'] == secretConfig.admin_token:
+    if session.has_key('admin_token') and session['admin_token'] == secret_cfg['admin_token']:
         return _panel()
     else:
         return _log_in()
@@ -232,8 +233,8 @@ def admin():
 def _log_in(methods=['GET', 'POST']):
     if request.method == 'GET':
         return login_page()
-    elif request.method == 'POST' and request.form['token'] == secretConfig.admin_token:
-        session['admin_token'] = secretConfig.admin_token
+    elif request.method == 'POST' and request.form['token'] == secret_cfg['admin_token']:
+        session['admin_token'] = secret_cfg['admin_token']
         return redirect(url_for('admin'))
     else:
         return redirect(url_for('index'))
@@ -271,6 +272,6 @@ if __name__ == '__main__':
     handler = RotatingFileHandler(cfg['errorlog'], maxBytes=10000, backupCount=1)
     handler.setLevel(logging.INFO)
     app.logger.addHandler(handler)
-    app.secret_key = secretConfig.secret_key
+    app.secret_key = secret_cfg['secret_key']
     app.run(host=cfg['host'], port=cfg['port'])
 
