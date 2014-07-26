@@ -13,13 +13,13 @@ head = """<!DOCTYPE html>
 menu = """
 <div style="padding-top: 100px;" class="container">
 	<ul class="nav nav-pills">
-		<li class = "{0}">
+		<li class = "%s">
 			<a href="/"> Home </a>
 		</li>
-		<li class = "{1}">
+		<li class = "%s">
 			<a href="/tasks"> Tasks </a>
 		</li>
-		<li class = "{2}">
+		<li class = "%s">
 			<a href="/scoreboard"> Scoreboard </a>
 		</li>
 	</ul>
@@ -28,7 +28,7 @@ menu = """
 
 title = """
 <div class="container">
-	<h1>{1}</h1>
+	<h1>{0}</h1>
 </div>
 """
 

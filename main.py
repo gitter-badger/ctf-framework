@@ -4,7 +4,6 @@ import os
 import re
 import sys
 import time
-import hints
 import loader
 import logging
 import hashlib
@@ -24,10 +23,8 @@ ttypes = loader.load_task_types()
 subttypes = loader.load_task_subtypes(ttypes)
 cache = loader.load_file_cache(ttypes, subttypes)
 
-with open('config.json', 'r') as json_data:
-    cfg = json.load(json_data)
-with open ('secretConfig.json', 'r') as json_data:
-    secret_cfg = json.load(json_data)
+cfg = loader.load_config()
+secret_cfg = loader.load_secret_config()
 
 def not_base_mod (module):
     return not module in cfg['base_modules']
@@ -36,22 +33,20 @@ def ftitle(var_title):
     return {
         'HOME': ('active', '', ''),
         'TASKS': ('', 'active', ''),
-        'SCOREBOARD': ('', '', 'active'),
+        'SCOREBOARD': ('', '', 'active')
     }[var_title]
 
 def fhead(var_title):
-    return ''.join([head, (menu.format(ftitle(var_title))), (title.format(var_title))])
+    return ''.join([head, (menu % (ftitle(var_title))), (title.format(var_title))])
 
 def fhints():
     if not cfg['hints_enabled']:
         return hints_disabled
-
     rhint = hint_top
 
-    if cfg['hints_enabled']:
-        reload(hints)
-        for var_hint in filter(not_base_mod,  dir(hints)):
-            rhint += (snipp_hint.format(hints.rglobals()[var_hint]))
+    hints = loader.load_hints()
+    for var_hint in hints:
+        rhint += snipp_hint.format(var_hint)
     return rhint + hint_bottom
 
 def fnotice (notice):
@@ -186,7 +181,7 @@ def show_landing_file(notice):
 
 def show_faceless(notice):
     return ''.join([fhead('TASKS'), submit_bar, fnotice(notice),
-        faceless_task.format(taskname, description))
+        faceless_task.format(taskname, description)])
 
 @app.route('/tasks')
 def tasks():
