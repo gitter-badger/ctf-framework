@@ -42,10 +42,10 @@ def fhead(var_title):
 def fhints():
     if not cfg['hints_enabled']:
         return hints_disabled
-    rhint = hint_top
 
+    rhint = hint_top
     hints = loader.load_hints()
-    print hints
+
     for hint in hints.itervalues():
         rhint += snipp_hint.format(hint)
     return rhint + hint_bottom
