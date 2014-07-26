@@ -45,8 +45,9 @@ def fhints():
     rhint = hint_top
 
     hints = loader.load_hints()
-    for var_hint in hints:
-        rhint += snipp_hint.format(var_hint)
+    print hints
+    for hint in hints.itervalues():
+        rhint += snipp_hint.format(hint)
     return rhint + hint_bottom
 
 def fnotice (notice):
@@ -257,6 +258,11 @@ def _commit_table():
             each = each.split()
             document += admin_commit_table_cell.format(each[0], each[1], each[2], each[3], each[4], each[5], each[6])
     return document + admin_commit_table_footer
+
+@app.route('/admin/reload/hints')
+def admin_hints_reload():
+    hints = loader.reload_hints()
+    return redirect(url_for('admin'))
 
 @app.route('/')
 @app.route('/index')

@@ -212,6 +212,9 @@ admin_menu = """<div class='jumbotron container' style='padding-top:200px; borde
 		</li>
 		<li class = "active">
 			<a href="/admin/logout"> Log Out </a>
+		</li>	<br><br>
+                <li class = "active">
+			<a href="/admin/reload_hints"> Reload hints </a>
 		</li>
 	</ul>
 </center>
