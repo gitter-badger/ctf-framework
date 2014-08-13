@@ -25,6 +25,7 @@ cache = loader.load_file_cache(ttypes, subttypes)
 
 cfg = loader.load_config()
 secret_cfg = loader.load_secret_config()
+hints = loader.load_hints()
 
 def not_base_mod (module):
     return not module in cfg['base_modules']
@@ -44,7 +45,6 @@ def fhints():
         return hints_disabled
 
     rhint = hint_top
-    hints = loader.load_hints()
 
     for hint in hints.itervalues():
         rhint += snipp_hint.format(hint)
@@ -221,10 +221,15 @@ def tasks():
 
 @app.route('/admin/', methods=['GET', 'POST'])
 def admin():
-    if session.has_key('admin_token') and session['admin_token'] == secret_cfg['admin_token']:
+    if session.has_key('admin_token') and admin_check_auth():
         return _panel()
     else:
         return _log_in()
+
+def admin_check_auth():
+    if session['admin_token'] == secret_cfg['admin_token']:
+        return True
+    return False
 
 def _log_in(methods=['GET', 'POST']):
     if request.method == 'GET':
@@ -248,6 +253,9 @@ def _panel():
 
 @app.route('/admin/commits')
 def _commit_table():
+    if not admin_check_auth():
+        return redirect(url_for('index'))
+
     document = head + admin_commit_table_head
 
     with open('logs/msuctf-submit.log') as f:
@@ -261,8 +269,28 @@ def _commit_table():
 
 @app.route('/admin/reload/hints')
 def admin_hints_reload():
-    hints = loader.reload_hints()
+    if not admin_check_auth():
+        return redirect(url_for('index'))
+
+    hints = loader.load_hints()
     return redirect(url_for('admin'))
+
+@app.route('/admin/reload/tasks')
+def admin_tasks_reload():
+    if not admin_check_auth():
+        return redirect(url_for('index'))
+    ttypes = loader.load_task_types()
+    subttypes = loader.load_task_subtypes(ttypes)
+    cache = loader.load_file_cache(ttypes, subttypes)
+    return redirect(url_for('admin'))
+
+@app.route('/admin/reload/config')
+def admin_config_reload():
+    if not admin_check_auth():
+        return redirect(url_for('index'))
+    cfg = loader.load_config()
+    secret_cfg = loader.load_secret_config()
+    return redirect(url_dor('admin'))
 
 @app.route('/')
 @app.route('/index')
