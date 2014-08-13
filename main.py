@@ -87,7 +87,7 @@ def commit_success(request, task_type, cost):
     connection = sql.connect('score.db')
     log = open('logs/msuctf-submit.log', 'a')
     q = 'insert into score values (?, ?, ?, ?);'
-    log.write(' '.join (['success', request.form['team_name'], request.form['flag'],
+    log.write(' '.join (['success', request.form['team_name'].replace(' ', '_'), request.form['flag'].replace(' ', '_'),
         task_type + str(cost), time.strftime('%Y-%m-%d %H:%M:%S'),
         request.remote_addr, '\n']))
 
@@ -106,7 +106,7 @@ def commit_success(request, task_type, cost):
 
 def commit_already_added(request, task_type, cost):
     log = open('logs/msuctf-submit.log', 'a')
-    log.write(' '.join (['warning', request.form['team_name'], request.form['flag'],
+    log.write(' '.join (['warning', request.form['team_name'].replace(' ', '_'), request.form['flag'].replace(' ', '_'),
         os.path.join(task_type, str(cost)), time.strftime('%Y-%m-%d %H:%M:%S'),
         request.remote_addr, '\n' ])
     )
@@ -115,7 +115,7 @@ def commit_already_added(request, task_type, cost):
 
 def commit_fail(request, task_type, cost):
     log = open('logs/msuctf-submit.log', 'a')
-    log.write(' '.join (['danger', request.form['team_name'], request.form['flag'],
+    log.write(' '.join (['danger', request.form['team_name'].replace(' ', '_'), request.form['flag'].replace(' ', '_'),
                                 task_type + '/' + str(cost), utime,
                                 request.remote_addr, '\n' ]))
     log.close()
