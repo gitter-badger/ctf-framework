@@ -4,18 +4,18 @@ import os
 import re
 import sys
 import time
-import loader
 import logging
 import hashlib
-
 import sqlite3 as sql
-
-from snippets import *
 from urlparse import urlparse
 from logging.handlers import RotatingFileHandler
 
 from flask import Flask, request, session, \
     g, redirect, url_for, abort
+
+import loader
+from snippets import *
+from decorators import templated 
 
 app = Flask(__name__)
 
@@ -294,6 +294,7 @@ def admin_config_reload():
 
 @app.route('/')
 @app.route('/index')
+@templated('index.html')
 def index():
     return fhead('HOME') + home + footer
 

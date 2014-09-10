@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title> CTF@MSU </title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+    <link rel="icon" href="data:;base64,=">
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    {% block head %} {% endblock head %}
+</head>
+<body> 
+{% block menu %} 
+<div style="padding-top: 100px;" class="container">
+        <ul class="nav nav-pills">
+            <li class = "%s">
+                <a href="/"> Home </a>
+            </li>
+            <li class = "%s">
+                <a href="/tasks"> Tasks </a>
+            </li>
+            <li class = "%s">
+                <a href="/scoreboard"> Scoreboard </a>
+            </li>
+        </ul>
+</div>
+{% endblock menu %} 
+{% block h_title %}
+<div class="container">
+    <h1>{% block title %} {% endblock title %} </h1>
+</div>
+{% endblock h_title %} 
+{% block body %} 
+{% endblock body %}
+</body> 
+</html>
