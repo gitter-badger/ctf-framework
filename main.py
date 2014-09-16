@@ -11,7 +11,7 @@ from urlparse import urlparse
 from logging.handlers import RotatingFileHandler
 
 from flask import Flask, request, session, \
-    g, redirect, url_for, abort
+    g, redirect, url_for 
 
 import loader
 from snippets import *
@@ -58,23 +58,19 @@ def fnotice (notice):
         '' : ''
     }[notice]
 
+@templated('scoreboard.html')
 @app.route('/scoreboard')
 def scoreboard ():
-    if not cfg['scoreboard_enabled']:
-        return 'Karim says: \'Stop fapping on the scoreboard !\''
-
-    connection = sql.connect('score.db')
+    connection = sql.connect(cfg['db_name'])
     q = 'select team_name, sum(cost) from score group by team_name order by sum(cost) DESC, date;'
     res = connection.execute(q)
-
-    document = fhead('SCOREBOARD') + scoreboard_head
-    j = 0
+    r = []
     for row in res:
-        j += 1
-        document += scoreboard_cell.format(j, row[0], row[1])
-
-    connection.close()
-    return document + scoreboard_footer
+        r += [row] 
+    return {
+            'score_data': r,
+            'scoreboard_enabled': cfg['scoreboard_enabled']
+    }
 
 @app.route('/task/<task_type>/<int:cost>', methods=['GET', 'POST'])
 def task(task_type, cost):
@@ -84,7 +80,7 @@ def task(task_type, cost):
         return show_task(task_type, cost)
 
 def commit_success(request, task_type, cost):
-    connection = sql.connect('score.db')
+    connection = sql.connect(cfg['db_name'])
     log = open('logs/msuctf-submit.log', 'a')
     q = 'insert into score values (?, ?, ?, ?);'
     log.write(' '.join (['success', request.form['team_name'].replace(' ', '_'), request.form['flag'].replace(' ', '_'),
@@ -141,7 +137,7 @@ def commit_flag(task_type, cost):
         flag.update(request.form['flag'])
 
         q = "select team_name from score where task_type = ? and cost = ? and team_name = ?;"
-        connection = sql.connect('score.db')
+        connection = sql.connect(cfg['db_name'])
         res = [r for r in connection.execute(q, [task_type, cost, request.form['team_name']])]
 
         if re.match('[^\w\*]', request.form['flag']) and re.match('[^\w\*]', request.form['team_name']) :
@@ -191,7 +187,7 @@ def tasks():
 
     document = fhead('TASKS') + fhints()
 
-    connection = sql.connect('score.db')
+    connection = sql.connect(cfg['db_name'])
     q = 'select * from score;'
     res = [r for r in connection.execute(q)]
 
@@ -296,7 +292,7 @@ def admin_config_reload():
 @app.route('/index')
 @templated('index.html')
 def index():
-    return fhead('HOME') + home + footer
+    pass
 
 if __name__ == '__main__':
     handler = RotatingFileHandler(cfg['errorlog'], maxBytes=10000, backupCount=1)

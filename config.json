@@ -3,6 +3,7 @@
     "host_ip": "127.0.0.1",
     "port": 8088,
     "tasks_port": 8888,
+    "db_name": "score.db",
 
     "tasks_enabled": 1,
     "scoreboard_enabled": 1,

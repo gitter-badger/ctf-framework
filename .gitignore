@@ -3,4 +3,4 @@
 logs/
 tasks/
 secretConfig.json
-
+score.db
