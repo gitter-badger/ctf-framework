@@ -11,11 +11,11 @@ from urlparse import urlparse
 from logging.handlers import RotatingFileHandler
 
 from flask import Flask, request, session, \
-    g, redirect, url_for 
+    g, redirect, url_for
 
 import loader
 from snippets import *
-from decorators import templated 
+from decorators import templated
 
 app = Flask(__name__)
 
@@ -58,18 +58,15 @@ def fnotice (notice):
         '' : ''
     }[notice]
 
-@templated('scoreboard.html')
 @app.route('/scoreboard')
+@templated('scoreboard.html')
 def scoreboard ():
-    connection = sql.connect(cfg['db_name'])
+    connection = sql.connect('score.db')
     q = 'select team_name, sum(cost) from score group by team_name order by sum(cost) DESC, date;'
     res = connection.execute(q)
-    r = []
-    for row in res:
-        r += [row] 
     return {
-            'score_data': r,
-            'scoreboard_enabled': cfg['scoreboard_enabled']
+        'scoreboard_enabled': cfg['scoreboard_enabled'],
+        'score_data': res
     }
 
 @app.route('/task/<task_type>/<int:cost>', methods=['GET', 'POST'])
