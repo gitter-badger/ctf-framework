@@ -4,3 +4,5 @@ logs/
 tasks/
 secretConfig.json
 score.db
+
+.DS_Store

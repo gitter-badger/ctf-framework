@@ -1,0 +1,8 @@
+{
+    "database_path": "databases/",
+    "score_database": "score.db",
+    "task_database": "tasks.db",
+    "error-log": "var/log/error-msuctf.log",
+    "host": "0.0.0.0",
+    "port": 8088
+}

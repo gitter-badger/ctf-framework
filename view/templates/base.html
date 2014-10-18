@@ -1,0 +1,39 @@
+<html> 
+    <head> 
+        <title> MSK CTF  </title>
+            <meta charset="UTF-8">
+            {% block scripts %}
+
+            {% endblock scripts %}
+            {% block styles %}
+                <link rel="stylesheet" href="main.css">
+
+            <link rel="stylesheet" href="{{url_for('view.static', filename='styles/main.css')}}">
+            <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto+Slab">
+            <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Josefin+Slab:600'>
+            <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Montserrat'> 
+            {% endblock styles %}
+    </head>
+    <body>
+        {% block menu %}
+        <div id="header">
+            <div id="navigation_box"> 
+                <div id="navigation_left">
+                <ul class="ul_nav">
+                    <li class="li_nav"> <a href="/index"> Homepage</a></li>
+                    <li class="li_nav"> <a href="/write-ups" > Write-ups</a></li>
+                </ul>
+                </div>
+                <div id="navigation_right">
+                <ul class="ul_nav">
+                    <li class="li_nav"> <a href="/scoreboard"> Tasks </a></li>
+                    <li class="li_nav"> <a href="/writeups"> Scoreboard </a></li>
+                </ul>
+                </div>
+                <div class="logo"> <a href="/index"> † Here lies PaulCher's free time. R.I.P. </a> </div>
+            </div>
+        </div>
+        {% endblock menu %}
+        {% block body %}{% endblock body %}
+    </body>
+</html>
