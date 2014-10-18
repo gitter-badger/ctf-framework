@@ -1,6 +1,5 @@
 from flask import redirect, render_template, request, url_for
 
-
 from view import view_blueprint as view
 
 
@@ -16,3 +15,8 @@ def task_page():
 @view.route('/scoreboard')
 def scoreboard_page():
     return render_template('scoreboard.html')
+
+@view.route('/write-ups')
+def write_ups_page():
+    return render_template('write-ups.html')
+
