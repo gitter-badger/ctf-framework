@@ -10,7 +10,7 @@
                     {% for task in tasks[task_type] %}
                         <td> 
                             {% if config['tasks_opened'] %} 
-                                <a href="/{{task.id}}"> 
+                                <a href="task/{{task.id}}"> 
                             {% endif %} 
                             <div class="task_unit task_closed">
                                 {% if not config['tasks_opened'] %}

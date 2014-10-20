@@ -12,7 +12,7 @@ Task = Table('tasks', metadata,
     Column('tasktype', String(15)),
     Column('cost', Integer),
     Column('description', String(1024)),
-#    Column('enabled', Integer),
+    #Column('enabled', Integer),
 )
 
 Flag = Table('flags', metadata,
@@ -21,6 +21,12 @@ Flag = Table('flags', metadata,
     Column('flag', String(80)),
     Column('taskname', String(40)),
     Column('teamname', String(40)),
+)
+
+Hint = Table('hints', metadata,
+    Column('id', Integer, primary_key=True),
+    Column('task_id', Integer),
+    Column('hint', String(512)),
 )
 
 

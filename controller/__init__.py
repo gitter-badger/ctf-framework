@@ -22,5 +22,7 @@ def get_tasks(config):
     session = config.get('session')
     return session.query(Task).order_by("tasktype")
 
-def get_task_info():
-    pass
+def get_task_info(config, id):
+    session = config['session']
+    return session.query(Task).filter_by(id=id).first()
+

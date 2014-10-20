@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block body %} 
+<div id="content">
+    <div id="taskbox"> 
+        <center>
+            <h1> {{ task_info.taskname }} </h1>
+            <h2> {{ task_info.tasktype }}/{{ task_info.cost }} </h2>
+            <h4> {{ task_info.description }} </h4>
+        </center>
+    </div>
+    <div id="hintbox">
+            <center> <h3> 
+                {% if hints %}
+                    Hint one: Checkout ImageMagick 
+                {% else %}
+                    No hints available so far <br> Sorry :( 
+                {% endif %} 
+            </h3> </center>
+    </div>
+    <div id="submitbox">
+        <center> <h2> Submit the flag </h2> </center>
+        <center>
+        <form action='/commit' method='POST'>
+            <input name='flag' size='60'>
+            <input type='submit' name='submit' value='Submit'>
+        </form>
+        </center>
+    </div>
+</div>
+{% endblock body %}

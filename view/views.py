@@ -22,11 +22,16 @@ def tasks_page():
     return render_template('tasks.html', tasks=items, config=app.config)
 
 @view.route('/task/<int:id>')
-def task_unit_page():
+def task_unit_page(id):
     if not app.config['tasks_opened']:
         return render_template('locked.html')
-    task_info = get_task_info()
-    return render_template('task_unit.html')
+    task_info = get_task_info(app.config, id)
+    hints = {}
+    if task_info: #and task_info.enabled:
+        return render_template('task_unit.html',
+                               task_info=task_info, hints=hints)
+    return render_template('locked.html')
+
 
 @view.route('/scoreboard')
 def scoreboard_page():
