@@ -1,4 +1,29 @@
 {% extends "base.html" %}
 {% block body %} 
-<h1> It works! </h1>
+    <div id="content">
+        <div id="content_box">
+            <h1> Tasks </h1>
+            <table class="task_table">
+                {% for task_type in tasks.keys() %}
+                <tr>
+                    <td> <div class="task_type"> {{ task_type }} </td>
+                    {% for task in tasks[task_type] %}
+                        <td> 
+                            {% if config['tasks_opened'] %} 
+                                <a href="/{{task.id}}"> 
+                            {% endif %} 
+                            <div class="task_unit task_closed">
+                                {% if not config['tasks_opened'] %}
+                                    <img src={{url_for('view.static', filename='icons/locked.png')}}>
+                                {% endif %}
+                                {{ task.cost }}
+                            </div>
+                            {% if config['tasks_opened'] %} </a> {% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
 {% endblock body %}

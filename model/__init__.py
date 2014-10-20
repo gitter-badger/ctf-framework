@@ -1,5 +1,5 @@
 
-from sqlalchemy import Table, Column, MetaData, text
+from sqlalchemy import Table, Column, MetaData
 from sqlalchemy import Integer, String, DateTime
 
 
@@ -9,13 +9,16 @@ Task = Table('tasks', metadata,
     Column('id', Integer, primary_key=True),
     Column('taskname', String(40), unique=True),
     Column('flag', String(80), unique=True),
+    Column('tasktype', String(15)),
     Column('cost', Integer),
-    Column('description', String(1024))
+    Column('description', String(1024)),
+#    Column('enabled', Integer),
 )
 
-Flag = Table('flag', metadata,
+Flag = Table('flags', metadata,
     Column('id', Integer, primary_key=True),
     Column('result', String(15)),
+    Column('flag', String(80)),
     Column('taskname', String(40)),
     Column('teamname', String(40)),
 )

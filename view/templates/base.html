@@ -6,12 +6,10 @@
 
             {% endblock scripts %}
             {% block styles %}
-                <link rel="stylesheet" href="main.css">
-
-            <link rel="stylesheet" href="{{url_for('view.static', filename='styles/main.css')}}">
             <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto+Slab">
             <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Josefin+Slab:600'>
             <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Montserrat'> 
+            <link rel="stylesheet" href="{{url_for('view.static', filename='styles/main.css')}}">
             {% endblock styles %}
     </head>
     <body>

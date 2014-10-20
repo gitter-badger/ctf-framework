@@ -5,15 +5,15 @@ import os.path
 import logging
 from logging.handlers import RotatingFileHandler
 
-from flask.ext.sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import Session, sessionmaker
 from flask import Flask, request, session, \
     redirect, url_for
 
 from view import view_blueprint
-from controller import initialize_enviroment
+from controller import initialize_enviroment, create_session
+
 
 app = Flask(__name__)
-db = SQLAlchemy(app)
 
 with open('config/app_config.json', 'r') as json_data:
     config = json.load(json_data)
@@ -23,22 +23,24 @@ with open('config/secret_config.json', 'r') as json_data:
 
 if __name__ == '__main__':
     # Setting up loggers
-    handler = RotatingFileHandler(config['error-log'], maxBytes=10000, backupCount=1)
+    handler = RotatingFileHandler(config['error-log'],
+        maxBytes=10000, backupCount=1)
     handler.setLevel(logging.INFO)
     app.logger.addHandler(handler)
 
+    # App Initialization
+    app.config = dict(app.config, **config)
+    app.config['engine'] = initialize_enviroment(app.config)
+    app.config['session'] = create_session(app.config['engine'])
+
     # Setting up database
-    app.config['SQLALCHEMY_DATABASE_URI'] = config['scheme'] + os.path.join(
-        config['database_path'],
-        config['score_database'],
+    app.config['SQLALCHEMY_DATABASE_URI'] = app.config['scheme'] + os.path.join(
+        app.config['database_path'],
+        app.config['score_database'],
     )
-    config['database'] = db
 
     # Security settings
     app.secret_key = secret_config['secret_key']
-
-    # App Initialization
-    engine = initialize_enviroment(config)
 
     # Running the app
     app.register_blueprint(view_blueprint)

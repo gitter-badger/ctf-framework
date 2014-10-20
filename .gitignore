@@ -3,6 +3,7 @@
 logs/
 tasks/
 secretConfig.json
-score.db
+*.db
+*.log
 
 .DS_Store
