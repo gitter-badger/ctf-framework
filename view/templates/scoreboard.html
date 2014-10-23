@@ -1,4 +1,20 @@
 {% extends "base.html" %}
 {% block body %} 
-<h1> It works! </h1>
+<div id="content">
+    <div id="content_box"> 
+        <center>
+            {% if info %}
+            <table class="table score_table">
+                <tr> <th> # </th> <th> TeamName </th> <th> Score </th> </tr>
+                {% for team in info %}      
+                    <tr> <td> {{ loop.index }} </td> <td> {{ team[0] }} </td> <td> {{ team[1] }}</td> </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+                <h1> No flags so far </h1>
+                <h1> You can be the first!</h1>
+            {% endif %}
+        </center>
+    </div>
+</div>
 {% endblock body %}

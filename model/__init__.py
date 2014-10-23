@@ -1,32 +1,33 @@
-
 from sqlalchemy import Table, Column, MetaData
 from sqlalchemy import Integer, String, DateTime
+from sqlalchemy.ext.declarative import declarative_base
 
 
-metadata = MetaData()
+Base = declarative_base()
 
-Task = Table('tasks', metadata,
-    Column('id', Integer, primary_key=True),
-    Column('taskname', String(40), unique=True),
-    Column('flag', String(80), unique=True),
-    Column('tasktype', String(15)),
-    Column('cost', Integer),
-    Column('description', String(1024)),
-    Column('enabled', Integer),
-)
+class Task(Base):
+    __tablename__  = 'tasks'
+    id = Column('id', Integer, primary_key=True)
+    taskname = Column('taskname', String(40), unique=True)
+    flag = Column('flag', String(80), unique=True)
+    tasktype = Column('tasktype', String(15))
+    cost = Column('cost', Integer)
+    description = Column('description', String(1024))
+    enabled = Column('enabled', Integer)
 
-Flag = Table('flags', metadata,
-    Column('id', Integer, primary_key=True),
-    Column('result', String(15)),
-    Column('flag', String(80)),
-    Column('task_id', Integer),
-    Column('teamname', String(40)),
-)
+class Flag(Base):
+    __tablename__ = 'flags'
+    id = Column('id', Integer, primary_key=True)
+    result = Column('result', String(15))
+    flag = Column('flag', String(80))
+    task_id = Column('task_id', Integer)
+    teamname = Column('teamname', String(40))
+    cost = Column('cost', Integer)
 
-Hint = Table('hints', metadata,
-    Column('id', Integer, primary_key=True),
-    Column('task_id', Integer),
-    Column('hint', String(512)),
-)
+class Hint(Base):
+    __tablename__ = 'hints'
+    id = Column('id', Integer, primary_key=True)
+    task_id = Column('task_id', Integer)
+    hint = Column('hint', String(512))
 
 

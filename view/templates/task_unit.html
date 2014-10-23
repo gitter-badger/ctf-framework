@@ -11,7 +11,9 @@
     <div id="hintbox">
             <center> <h3> 
                 {% if hints %}
-                    Hint one: Checkout ImageMagick 
+                    {% for hint in hints %}
+                        <small><strong> hint #{{ loop.index }}:</strong> {{ hint }}</small>
+                    {% endfor %} 
                 {% else %}
                     No hints available so far <br> Sorry :( 
                 {% endif %} 

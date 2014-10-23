@@ -1,9 +1,0 @@
-Exception on / [GET]
-Traceback (most recent call last):
-  File "/Users/paulcher/venv/ctf-framework/.env/lib/python2.7/site-packages/flask/app.py", line 1817, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/Users/paulcher/venv/ctf-framework/.env/lib/python2.7/site-packages/flask/app.py", line 1478, in full_dispatch_request
-    response = self.make_response(rv)
-  File "/Users/paulcher/venv/ctf-framework/.env/lib/python2.7/site-packages/flask/app.py", line 1566, in make_response
-    raise ValueError('View function did not return a response')
-ValueError: View function did not return a response

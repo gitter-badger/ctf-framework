@@ -5,13 +5,13 @@ import os.path
 import logging
 from logging.handlers import RotatingFileHandler
 
+from OpenSSL import SSL
 from sqlalchemy.orm import Session, sessionmaker
 from flask import Flask, request, session, \
     redirect, url_for
 
 from view import view_blueprint
 from controller import initialize_enviroment, create_session
-
 
 app = Flask(__name__)
 
@@ -41,8 +41,10 @@ if __name__ == '__main__':
 
     # Security settings
     app.secret_key = secret_config['secret_key']
+    #context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+    #context.load_cert_chain('yourserver.crt', 'yourserver.key')
 
     # Running the app
     app.register_blueprint(view_blueprint)
-    app.run(host=config['host'], port=config['port'])
+    app.run(host=config['host'], port=config['port']) # , ssl_context=context)
 

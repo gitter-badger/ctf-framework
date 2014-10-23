@@ -8,6 +8,6 @@
     "port": 8088,
 
     "tasks_opened": true,
-    "scoreboard_opened": false,
+    "scoreboard_opened": true,
     "writeups_opened": false
 }

@@ -1,6 +1,14 @@
 Flask==0.10.1
+Flask-SQLAlchemy==2.0
 Jinja2==2.7.3
 MarkupSafe==0.23
 SQLAlchemy==0.9.8
 Werkzeug==0.9.6
+cffi==0.8.6
+cryptography==0.6.1
+gnureadline==6.3.3
+ipython==2.3.0
 itsdangerous==0.24
+pyOpenSSL==0.14
+pycparser==2.10
+six==1.8.0

@@ -192,3 +192,10 @@ a {
     padding: 2px;
     color: #ededed;
 }
+
+.score_table {
+    margin-top: 50px;
+    width: 100%;
+    padding: 10px;
+
+}
