@@ -1,11 +1,9 @@
-@import url("http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900,400italic");
-@import url("//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css");
 
 body { 
     margin: 0px;
     background-color: #f9f9f9;
     font-size: 14px;
-    font-family: "Roboto Slab", Helvetica Neue, sans-serif;
+    font-family: "Roboto Slab", "Helvetica Neue", sans-serif;
     min-width: 320px;
 }
 
@@ -75,7 +73,7 @@ a {
     color: #444;
     font-weight: 800;
     letter-spacing: 1px;
-    font-family: Roboto Slab, sans-serif;
+    font-family: "Roboto Slab", sans-serif;
     font-size: 20px;
 }
 
@@ -109,7 +107,7 @@ a {
 }
 
 #content {
-    display: block;
+    display: inline-block;
     width: 90%;
     margin-top: 45px;
     margin-left: 5%;
@@ -118,6 +116,7 @@ a {
     background-color: #fff;
     border: solid 1px #ededed;
     min-height: 500px;
+
 }
 
 #content_box {
@@ -171,7 +170,7 @@ a {
 
 #hintbox {
     float: right;
-    min-height: 400px;
+    min-height: 450px;
     border: 1px solid #888;
     width: 24%;
     margin: 3%;
@@ -186,4 +185,10 @@ a {
     padding: 2%;
     width: 54%;
     min-height: 140px;
+}
+
+.submit_field { 
+    margin: 10px;
+    padding: 2px;
+    color: #ededed;
 }

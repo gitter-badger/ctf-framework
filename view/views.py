@@ -4,6 +4,7 @@ from flask import current_app as app
 from view import view_blueprint as view
 from sqlalchemy.orm import sessionmaker
 from controller import get_tasks, get_task_info
+from controller import is_flag_valid
 
 @view.route('/')
 @view.route('/index')
@@ -12,7 +13,7 @@ def index_page():
 
 @view.route('/tasks')
 def tasks_page():
-    tasks = get_tasks(app.config)
+    tasks = get_tasks()
     items = {}
     for task in tasks:
         if items.get(task.tasktype, ''):
@@ -25,7 +26,7 @@ def tasks_page():
 def task_unit_page(id):
     if not app.config['tasks_opened']:
         return render_template('locked.html')
-    task_info = get_task_info(app.config, id)
+    task_info = get_task_info(id)
     hints = {}
     if task_info: #and task_info.enabled:
         return render_template('task_unit.html',
@@ -41,5 +42,20 @@ def scoreboard_page():
 
 @view.route('/write-ups')
 def write_ups_page():
+    if not app.config['writeups_opened']:
+        return render_template('locked.html')
     return render_template('write-ups.html', config=app.config)
+
+@view.route('/commit', methods=['POST'])
+def commit_flag():
+    if app.config['tasks_opened']:
+        rcode = is_flag_valid(request.form)
+        print rcode
+        if rcode == 101:
+            return render_template('success.html', args=request.form)
+        elif rcode == 202:
+            return render_template('fail.html')
+        elif rcode == 303:
+            return render_template('already_submitted.html')
+    return ''
 

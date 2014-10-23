@@ -12,14 +12,14 @@ Task = Table('tasks', metadata,
     Column('tasktype', String(15)),
     Column('cost', Integer),
     Column('description', String(1024)),
-    #Column('enabled', Integer),
+    Column('enabled', Integer),
 )
 
 Flag = Table('flags', metadata,
     Column('id', Integer, primary_key=True),
     Column('result', String(15)),
     Column('flag', String(80)),
-    Column('taskname', String(40)),
+    Column('task_id', Integer),
     Column('teamname', String(40)),
 )
 

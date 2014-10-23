@@ -9,16 +9,16 @@
                     <td> <div class="task_type"> {{ task_type }} </td>
                     {% for task in tasks[task_type] %}
                         <td> 
-                            {% if config['tasks_opened'] %} 
+                            {% if config['tasks_opened'] %} <!-- or not task.enabled -->
                                 <a href="task/{{task.id}}"> 
                             {% endif %} 
                             <div class="task_unit task_closed">
-                                {% if not config['tasks_opened'] %}
+                                {% if not config['tasks_opened'] %} <!-- or not task.enabled -->
                                     <img src={{url_for('view.static', filename='icons/locked.png')}}>
                                 {% endif %}
                                 {{ task.cost }}
                             </div>
-                            {% if config['tasks_opened'] %} </a> {% endif %}
+                            {% if config['tasks_opened'] %} <!-- or not task.enabled --></a> {% endif %} 
                         </td>
                     {% endfor %}
                 </tr>
