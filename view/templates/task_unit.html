@@ -20,12 +20,12 @@
             </h3> </center>
     </div>
     <div id="submitbox">
-        <center> <h2> Submit the flag <img src={{url_for('view.static', filename='icons/flag.png') }} height="19px" width="16px"></h2> 
+        <center> <h2> Submit the flag <img src={{url_for('view.static', filename='icons/flag.png') }} class='flagicon'></h2> 
         <form action='/commit' method='POST'>
             <div class="form-group">
             <div class="input-group submit">
-                <input name='teamname' size='28' class="form-control submit_field" value="Teamname..." onclick='this.value=""'> 
-                <input name='flag' size='28' class="form-control submit_field" value="Flag..." onclick='this.value=""'>
+                <input name='teamname' size='28' class="form-control submit_field" placeholder="Teamname"> 
+                <input name='flag' size='28' class="form-control submit_field" placeholder="Teamname">
                 <input name='task_id' type='hidden' value='{{task_info.id}}'>
             </div>
             </div>

@@ -18,9 +18,9 @@ a {
 
 #header {
     width: 100%;
-    height: 200px;
+    height: 135px;
     background-color: #fff;
-    padding-top: 60px;
+    padding-top: 40px;
     min-height: 40px;
     display: block;
     border-bottom: solid 1px #eee;
@@ -93,9 +93,9 @@ a {
 }
 
 .logo {
-    border-radius: 120px;
-    -moz-border-radius: 120px;
-    -webkit-border-radius: 120px;
+    border-radius: 130px;
+    -moz-border-radius: 130px;
+    -webkit-border-radius: 130px;
     position: absolute;
     width: 200px;
     height: 150px; 
@@ -198,4 +198,9 @@ a {
     width: 100%;
     padding: 10px;
 
+}
+
+.flagicon {
+    height: 19px;
+    width: 16px;
 }
