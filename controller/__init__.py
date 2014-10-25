@@ -44,8 +44,8 @@ def is_flag_valid(args, addr):
         task_id = sanitize_html_context(args.get('task_id'))
         flag = sanitize_html_context(args.get('flag'))
 
-    status_code = get_status_code(teamname, task_id, flag, addr)
-    return status_code
+        return get_status_code(teamname, task_id, flag, addr)
+    return 202
 
 def get_status_code(teamname, task_id, flag, ip_addr):
     session = app.config.get('session')
