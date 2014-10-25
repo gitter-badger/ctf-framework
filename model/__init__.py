@@ -24,7 +24,7 @@ class Flag(Base):
     cost = Column('cost', Integer)
     result = Column('result', String(15))
     ip_addr = Column('ip_addr', String(20))
-    datetime = Column("commitdate", DateTime())
+    datetime = Column("datetime", DateTime())
 
 class Hint(Base):
     __tablename__ = 'hints'
