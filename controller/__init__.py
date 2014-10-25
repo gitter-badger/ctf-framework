@@ -113,7 +113,8 @@ def get_scoreboard():
                 func.sum(Flag.cost),
                 Flag.teamname,
     ).filter_by(result='success').group_by(Flag.teamname).\
-        order_by(desc(func.sum(Flag.cost))).all()
+        order_by(desc(func.sum(Flag.cost))).\
+        order_by(Flag.datetime).all()
     return stat
 
 def get_commits():
