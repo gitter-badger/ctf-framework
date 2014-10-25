@@ -4,9 +4,9 @@ from flask import current_app as app
 from view import view_blueprint as view
 from sqlalchemy.orm import sessionmaker
 from controller import get_tasks, get_task_info
-from controller import get_scoreboard, get_solved_tasks
-from controller import get_hints, get_commits
-from controller import is_flag_valid
+from controller import get_scoreboard, get_solved_tasks, get_teamdata
+from controller import get_hints, get_commits, get_taskname_by_id
+from controller import is_flag_valid, proceed_teamdata
 
 @view.route('/')
 @view.route('/index')
@@ -22,7 +22,7 @@ def tasks_page():
             items[task.tasktype].append(task)
         else:
             items[task.tasktype] = [task]
-    solved_tasks = get_solved_tasks(session['teamname'])
+    solved_tasks = get_solved_tasks(session.get('teamname', ''))
     solved_tasks = [solv[0] for solv in solved_tasks]
     return render_template('tasks.html', tasks=items,
                            config=app.config, solved_tasks=solved_tasks)
@@ -35,7 +35,9 @@ def task_unit_page(tid):
     hints = get_hints(tid)
     if task_info and task_info.enabled:
         return render_template('task_unit.html',
-                               task_info=task_info, hints=hints)
+                                task_info=task_info,
+                                teamholder=session.get('teamname', ''),
+                                hints=hints)
     return render_template('locked.html')
 
 @view.route('/scoreboard')
@@ -44,6 +46,23 @@ def scoreboard_page():
         return render_template('locked.html')
     scoreboard_info = get_scoreboard()
     return render_template('scoreboard.html', info=scoreboard_info)
+
+@view.route('/scoreboard/<string:teamname>')
+def team_profile(teamname):
+    teamdata = get_teamdata(teamname)
+    taskdata = [(get_taskname_by_id(flag.task_id), flag.datetime) \
+                for flag in teamdata if flag.result == 'success']
+    if not app.config['scoreboard_opened'] or not teamdata:
+        return render_template('locked.html')
+    pts, solved, commits, last_commit = proceed_teamdata(teamdata)
+    return render_template('teamprofile.html',
+                                            teamname=teamname,
+                                            pts=pts,
+                                            solved=solved,
+                                            commits=commits,
+                                            taskdata=taskdata,
+                                            last_commit=last_commit,
+                           )
 
 @view.route('/write-ups')
 def write_ups_page():

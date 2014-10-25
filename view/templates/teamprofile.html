@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block body %} 
+<div id="content">
+    <div id="content_box"> 
+        <center>
+            <h1> {{teamname}} Team Profile </h1>
+        </center>
+        <h2> Tasks solved by {{teamname}} Team </h2>
+        <table class="table table-striped">
+            {% for commit in taskdata %}
+                <tr> <td> {{commit[0][0]}} </td> <td> {{commit[1]}} </td> </tr>
+            {% endfor %}
+        </table>
+            
+    </div>
+</div>
+{% endblock body %}
