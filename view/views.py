@@ -67,7 +67,7 @@ def commit_flag():
 
 @view.route('/admin', methods=['GET', 'POST'])
 def admin_login():
-    if session['token'] == app.config.get('admin_token'):
+    if session.get('token', '') == app.config.get('admin_token'):
         return redirect('/admin_panel')
     if request.method == 'GET':
         return render_template('admin_login.html')
