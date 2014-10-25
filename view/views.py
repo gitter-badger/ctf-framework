@@ -50,19 +50,18 @@ def scoreboard_page():
 @view.route('/scoreboard/<string:teamname>')
 def team_profile(teamname):
     teamdata = get_teamdata(teamname)
-    taskdata = [(get_taskname_by_id(flag.task_id), flag.datetime) \
+    taskdata = [(get_taskname_by_id(flag.task_id), flag.datetime.replace(microsecond=0)) \
                 for flag in teamdata if flag.result == 'success']
     if not app.config['scoreboard_opened'] or not teamdata:
         return render_template('locked.html')
     pts, solved, commits, last_commit = proceed_teamdata(teamdata)
     return render_template('teamprofile.html',
-                                            teamname=teamname,
-                                            pts=pts,
-                                            solved=solved,
-                                            commits=commits,
-                                            taskdata=taskdata,
-                                            last_commit=last_commit,
-                           )
+                            teamname=teamname,
+                            pts=pts,
+                            solved=solved,
+                            commits=commits,
+                            taskdata=taskdata,
+                            last_commit=last_commit.replace(microsecond=0))
 
 @view.route('/write-ups')
 def write_ups_page():
