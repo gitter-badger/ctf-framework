@@ -42,8 +42,8 @@ if __name__ == '__main__':
     # Security settings
     app.secret_key = secret_config['secret_key']
     app.config['admin_token'] = secret_config['admin_token']
-    #context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-    #context.load_cert_chain('yourserver.crt', 'yourserver.key')
+    # context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+    # context.load_cert_chain('yourserver.crt', 'yourserver.key')
 
     # Running the app
     app.register_blueprint(view_blueprint)

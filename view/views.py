@@ -4,9 +4,9 @@ from flask import current_app as app
 from view import view_blueprint as view
 from sqlalchemy.orm import sessionmaker
 from controller import get_tasks, get_task_info
+from controller import get_scoreboard, get_solved_tasks
+from controller import get_hints, get_commits
 from controller import is_flag_valid
-from controller import get_scoreboard
-from controller import get_hints
 
 @view.route('/')
 @view.route('/index')
@@ -22,7 +22,10 @@ def tasks_page():
             items[task.tasktype].append(task)
         else:
             items[task.tasktype] = [task]
-    return render_template('tasks.html', tasks=items, config=app.config)
+    solved_tasks = get_solved_tasks(session['teamname'])
+    solved_tasks = [solv[0] for solv in solved_tasks]
+    return render_template('tasks.html', tasks=items,
+                           config=app.config, solved_tasks=solved_tasks)
 
 @view.route('/task/<int:tid>')
 def task_unit_page(tid):
@@ -35,13 +38,11 @@ def task_unit_page(tid):
                                task_info=task_info, hints=hints)
     return render_template('locked.html')
 
-
 @view.route('/scoreboard')
 def scoreboard_page():
     if not app.config['scoreboard_opened']:
         return render_template('locked.html')
     scoreboard_info = get_scoreboard()
-    print scoreboard_info
     return render_template('scoreboard.html', info=scoreboard_info)
 
 @view.route('/write-ups')
@@ -53,9 +54,9 @@ def write_ups_page():
 @view.route('/commit', methods=['POST'])
 def commit_flag():
     if app.config['tasks_opened']:
-        if not 'teamname' in session and request.form.has_key('teamname'):
+        if request.form.has_key('teamname'):
             session['teamname'] = request.form.get('teamname')
-        rcode = is_flag_valid(request.form)
+        rcode = is_flag_valid(request.form, request.remote_addr)
         if rcode == 101:
             return render_template('success.html', args=request.form)
         elif rcode == 202:
@@ -63,4 +64,43 @@ def commit_flag():
         elif rcode == 303:
             return render_template('already_submitted.html')
     return ''
+
+@view.route('/admin', methods=['GET', 'POST'])
+def admin_login():
+    if session['token'] == app.config.get('admin_token'):
+        return redirect('/admin_panel')
+    if request.method == 'GET':
+        return render_template('admin_login.html')
+    if request.form.has_key('token') and \
+            request.form.get('token') == app.config.get('admin_token'):
+        session['token'] = app.config.get('admin_token')
+        return redirect('/admin_panel')
+    return render_template('locked.html')
+
+@view.route('/admin_panel')
+def admin_panel():
+    if not session['token'] == app.config.get('admin_token'):
+        return render_template('locked.html')
+    return render_template('admin_panel.html')
+
+@view.route('/admin/logout')
+def admin_logout():
+    if not session['token'] == app.config.get('admin_token'):
+        return render_template('locked.html')
+    session['token'] = ''
+    return redirect('/index')
+
+@view.route('/admin/configure')
+def configure(methods=['POST']):
+    if not session['token'] == app.config.get('admin_token'):
+        return render_template('locked.html')
+    # TODO: configure here
+    return redirect('/admin_panel')
+
+@view.route('/admin/commits')
+def show_commits():
+    if not session['token'] == app.config.get('admin_token'):
+        return render_template('locked.html')
+    commits = get_commits()
+    return render_template('commits.html', commits=commits)
 

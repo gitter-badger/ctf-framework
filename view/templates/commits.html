@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block body %} 
+<div id="content">
+    <div id="content_box"> 
+        <center>
+            {% if commits %}
+            <table class="table score_table">
+                <tr> <th> # </th> <th> TeamName </th> <th> Flag </th> <th> IP Addr <th> Datetime </th> </tr>
+                {% for commit in commits %}      
+                    <tr> <td class='{{commit.result}}'>{{loop.index}}</td> <td>{{commit.teamname}}</td> <td>{{commit.flag}}</td> <td>{{commit.ip_addr}}</td> <td>{{commit.datetime}}</td> </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+                <h1>No one commited yet. </h1>
+            {% endif %}
+        </center>
+    </div>
+</div>
+{% endblock body %}

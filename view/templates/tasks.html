@@ -12,7 +12,7 @@
                             {% if config['tasks_opened'] and task.enabled %}
                                 <a href="task/{{task.id}}"> 
                             {% endif %} 
-                            <div class="task_unit task_closed">
+                            <div class="task_unit task_closed {% if task.id in solved_tasks %} task_solved {% endif %}">
                                 {% if not config['tasks_opened'] or not task.enabled %}
                                     <img src={{url_for('view.static', filename='icons/locked.png')}}>
                                 {% endif %}

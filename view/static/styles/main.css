@@ -204,3 +204,26 @@ a {
     height: 19px;
     width: 16px;
 }
+
+.admin_button { 
+    padding: 5px;
+    margin-left: 15px;
+}
+
+.already_submitted {
+    background-color: #fff8c6;
+}
+
+.fail {  
+    background-color: #f75d59;
+}
+
+.success {
+    background-color: #a1f3a1;
+}
+
+.task_solved {
+    background-color: #000;
+    color: #fff;
+    border: solid 1px black;
+}

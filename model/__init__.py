@@ -18,11 +18,13 @@ class Task(Base):
 class Flag(Base):
     __tablename__ = 'flags'
     id = Column('id', Integer, primary_key=True)
-    result = Column('result', String(15))
-    flag = Column('flag', String(80))
     task_id = Column('task_id', Integer)
     teamname = Column('teamname', String(40))
+    flag = Column('flag', String(80))
     cost = Column('cost', Integer)
+    result = Column('result', String(15))
+    ip_addr = Column('ip_addr', String(20))
+    datetime = Column("commitdate", DateTime())
 
 class Hint(Base):
     __tablename__ = 'hints'

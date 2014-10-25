@@ -1,9 +1,10 @@
 import os.path
+from datetime import datetime
 
 from flask import current_app as app
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import func
-from sqlalchemy import or_
+from sqlalchemy import or_, desc
 
 import database
 from model import Task, Flag, Hint
@@ -34,7 +35,7 @@ def get_hints(tid):
         filter(or_(Hint.task_id == 0, Hint.task_id == tid)).all()
     return hints
 
-def is_flag_valid(args):
+def is_flag_valid(args, addr):
     if args.has_key('teamname') and args['teamname'] and \
             args.has_key('flag') and args.has_key('task_id') and \
             args['flag'] and args['task_id']:
@@ -43,10 +44,10 @@ def is_flag_valid(args):
         task_id = sanitize_html_context(args.get('task_id'))
         flag = sanitize_html_context(args.get('flag'))
 
-    status_code = get_status_code(teamname, task_id, flag)
+    status_code = get_status_code(teamname, task_id, flag, addr)
     return status_code
 
-def get_status_code(teamname, task_id, flag):
+def get_status_code(teamname, task_id, flag, ip_addr):
     session = app.config.get('session')
     cost_query = session.query(Task.cost).filter_by(id=task_id).first()
 
@@ -55,7 +56,7 @@ def get_status_code(teamname, task_id, flag):
                                         task_id=int(task_id),
                                         result='success').all()
 
-    if check_already_submitted(flag, int(task_id), teamname, cost_query[0]):
+    if check_already_submitted(flag, task_id, teamname, cost_query[0], ip_addr):
         return 303
 
     flag_query = session.query(Task).filter_by(id=task_id, flag=flag).all()
@@ -68,7 +69,9 @@ def get_status_code(teamname, task_id, flag):
                     flag=flag,
                     task_id=int(task_id),
                     teamname=teamname,
-                    cost=cost_query[0])
+                    cost=cost_query[0],
+                    ip_addr=ip_addr,
+                    datetime=datetime.now())
         session.add(success_flag)
         session.commit()
         return 101
@@ -77,16 +80,18 @@ def get_status_code(teamname, task_id, flag):
                     flag=flag,
                     task_id=int(task_id),
                     teamname=teamname,
-                    cost=cost_query[0])
+                    cost=cost_query[0],
+                    ip_addr=ip_addr,
+                    datetime=datetime.now())
         session.add(fail_flag)
         session.commit()
         return 202
 
-def check_already_submitted(flag, task_id, teamname, cost):
+def check_already_submitted(flag, task_id, teamname, cost, ip_addr):
     session = app.config.get('session')
     already_submitted = session.query(Flag).filter_by(
                                         teamname=teamname,
-                                        task_id=task_id,
+                                        task_id=int(task_id),
                                         result='success').all()
 
     if already_submitted:
@@ -94,7 +99,9 @@ def check_already_submitted(flag, task_id, teamname, cost):
                     flag=flag,
                     task_id=task_id,
                     teamname=teamname,
-                    cost=cost)
+                    cost=cost,
+                    ip_addr=ip_addr,
+                    datetime=datetime.now())
         session.add(already_flag)
         session.commit()
         return True
@@ -105,6 +112,17 @@ def get_scoreboard():
     stat = session.query(
                 func.sum(Flag.cost),
                 Flag.teamname,
-    ).filter_by(result='success').group_by(Flag.teamname).all()
+    ).filter_by(result='success').group_by(Flag.teamname).\
+        order_by(desc(func.sum(Flag.cost))).all()
     return stat
 
+def get_commits():
+    session = app.config.get('session')
+    commits = session.query(Flag).all()
+    return commits
+
+def get_solved_tasks(teamname):
+    session = app.config.get('session')
+    solved_tasks = session.query(Flag.task_id).\
+        filter_by(teamname=teamname, result='success').all()
+    return solved_tasks
