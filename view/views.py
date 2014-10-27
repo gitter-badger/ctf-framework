@@ -5,7 +5,7 @@ from view import view_blueprint as view
 from sqlalchemy.orm import sessionmaker
 from controller import get_tasks, get_task_info
 from controller import get_scoreboard, get_solved_tasks, get_teamdata
-from controller import get_hints, get_commits, get_taskname_by_id
+from controller import get_hints, get_commits, get_tasknametype_by_id
 from controller import is_flag_valid, proceed_teamdata
 
 @view.route('/')
@@ -50,17 +50,24 @@ def scoreboard_page():
 @view.route('/scoreboard/<string:teamname>')
 def team_profile(teamname):
     teamdata = get_teamdata(teamname)
-    taskdata = [(get_taskname_by_id(flag.task_id), flag.datetime.replace(microsecond=0)) \
+    taskdata = [(get_tasknametype_by_id(flag.task_id), flag.datetime.replace(microsecond=0)) \
                 for flag in teamdata if flag.result == 'success']
+    commits = {}
+    for commit in taskdata:
+        tasktype = commit[0][1]
+        if not tasktype in commits.keys():
+            commits[tasktype] = 0
+        commits[tasktype] += 1
+
     if not app.config['scoreboard_opened'] or not teamdata:
         return render_template('locked.html')
-    pts, solved, commits, last_commit = proceed_teamdata(teamdata)
+    pts, solved, last_commit = proceed_teamdata(teamdata)
     return render_template('teamprofile.html',
                             teamname=teamname,
+                            taskdata=taskdata,
+                            commits=commits.items(),
                             pts=pts,
                             solved=solved,
-                            commits=commits,
-                            taskdata=taskdata,
                             last_commit=last_commit.replace(microsecond=0))
 
 @view.route('/write-ups')

@@ -124,11 +124,10 @@ def get_teamdata(teamname):
 
 def proceed_teamdata(teamdata):
     success_flags = [flag.cost for flag in teamdata if flag.result == 'success']
-    commits = len(teamdata)
     solved = len(success_flags)
     pts = sum(success_flags)
     last_commit = teamdata.pop().datetime
-    return pts, solved, commits, last_commit
+    return pts, solved, last_commit
 
 def get_commits():
     session = app.config.get('session')
@@ -141,7 +140,8 @@ def get_solved_tasks(teamname):
         filter_by(teamname=teamname, result='success').all()
     return solved_tasks
 
-def get_taskname_by_id(task_id):
+def get_tasknametype_by_id(task_id):
     session = app.config.get('session')
-    return session.query(Task.taskname).\
+    return session.query(Task.taskname, Task.tasktype).\
         filter_by(id=task_id).first()
+

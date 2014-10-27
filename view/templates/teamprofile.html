@@ -1,4 +1,8 @@
 {% extends "base.html" %}
+{% block styles %}
+    {{ super() }}
+    <script src="{{url_for('view.static', filename='scripts/Chart.js')}}"></script>
+{% endblock %}
 {% block body %} 
 <div id="content">
     <div id="content_box"> 
@@ -6,12 +10,49 @@
             <h1> {{teamname}} Team Profile </h1>
         </center>
         <h2> Tasks solved by {{teamname}} Team </h2>
+        <div class='commit_table'>
         <table class="table table-striped">
             {% for commit in taskdata %}
                 <tr> <td> {{commit[0][0]}} </td> <td> {{commit[1]}} </td> </tr>
             {% endfor %}
         </table>
-            
+        </div>
+        <div class='commit_stats'>
+            <div class='large_points'>{{pts}}pts</div>
+            <h3>Tasks solved: {{solved}}</h3>
+            <h3>Last commit on: {{last_commit}}</h3>
+        </div>
+     <div class='commit_table'>
+     </div>
+     <div class='jschart_stat'>
+        <h2> Stats </h2>
+        <div id="canvas-holder">
+            <canvas id="chart-area" width="250" height="250" style='padding-left: 20%;'  />
+        </div>
+    
     </div>
 </div>
+
+    <script>
+        var colors = ["#46BFBD","#FDB45C", "#949FB1", "#4D5360", "#000000", "#8dd3c7","#ffffb3","#bebada","#fb8072","#80b1d3","#fdb462","#b3de69","#fccde5","#d9d9d9","#bc80bd","#ccebc5","#ffed6f"]
+        var highlight= ["#46BFBD","#FDB45C", "#949FB1", "#4D5360", "#000000", "#8dd3c7","#ffffb3","#bebada","#fb8072","#80b1d3","#fdb462","#b3de69","#fccde5","#d9d9d9","#bc80bd","#ccebc5","#ffed6f"]
+        var pieData = [
+                {% for key, value in commits %} 
+                {
+                    value: {{value}},
+                    color: colors[{{loop.index }}],
+                    highlight: highlight[{{loop.index}}],
+                    label: "{{key}}",
+                },
+                {% endfor %}
+            ];
+
+            window.onload = function(){
+                var ctx = document.getElementById("chart-area").getContext("2d");
+                window.myPie = new Chart(ctx).Pie(pieData);
+            };
+
+
+
+    </script>
 {% endblock body %}
