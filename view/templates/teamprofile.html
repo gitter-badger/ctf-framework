@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block styles %}
     {{ super() }}
-    <script src="{{url_for('view.static', filename='scripts/Chart.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('view.static', filename='scripts/chart')}}"></script>
 {% endblock %}
 {% block body %} 
 <div id="content">
