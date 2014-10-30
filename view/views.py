@@ -15,6 +15,9 @@ def index_page():
 
 @view.route('/tasks')
 def tasks_page():
+    if app.config['admin_access_only'] \
+            and session.get('token', '') != app.config.get('admin_token'):
+        return render_template('locked.html')
     tasks = get_tasks()
     items = {}
     for task in tasks:
@@ -29,6 +32,9 @@ def tasks_page():
 
 @view.route('/task/<int:tid>')
 def task_unit_page(tid):
+    if app.config['admin_access_only'] \
+            and session.get('token', '') != app.config.get('admin_token'):
+        return render_template('locked.html')
     if not app.config['tasks_opened']:
         return render_template('locked.html')
     task_info = get_task_info(tid)
@@ -42,6 +48,10 @@ def task_unit_page(tid):
 
 @view.route('/scoreboard')
 def scoreboard_page():
+
+    if app.config['admin_access_only'] \
+            and session.get('token', '') != app.config.get('admin_token'):
+        return render_template('locked.html')
     if not app.config['scoreboard_opened']:
         return render_template('locked.html')
     scoreboard_info = get_scoreboard()
@@ -50,7 +60,8 @@ def scoreboard_page():
 @view.route('/scoreboard/<string:teamname>')
 def team_profile(teamname):
     teamdata = get_teamdata(teamname)
-    taskdata = [(get_tasknametype_by_id(flag.task_id), flag.datetime.replace(microsecond=0)) \
+    taskdata = [(get_tasknametype_by_id(flag.task_id), \
+                flag.datetime.replace(microsecond=0)) \
                 for flag in teamdata if flag.result == 'success']
     commits = {}
     for commit in taskdata:
@@ -110,8 +121,6 @@ def admin_panel():
 
 @view.route('/admin/logout')
 def admin_logout():
-    if not session['token'] == app.config.get('admin_token'):
-        return render_template('locked.html')
     session['token'] = ''
     return redirect('/index')
 

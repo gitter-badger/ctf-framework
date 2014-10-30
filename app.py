@@ -6,7 +6,6 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 #from OpenSSL import SSL
-from sqlalchemy.orm import Session, sessionmaker
 from flask import Flask, request, session, \
     redirect, url_for
 
