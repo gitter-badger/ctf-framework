@@ -16,6 +16,10 @@ a {
     text-decoration: none;   
 }
 
+a:hover {
+    text-decoration: underline;
+}
+
 .fill {
     height: 100%;
     width: 100%;
