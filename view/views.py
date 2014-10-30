@@ -1,8 +1,11 @@
+import os
+
 from flask import redirect, render_template, request, url_for, session
+from flask import send_from_directory
 from flask import current_app as app
+from sqlalchemy.orm import sessionmaker
 
 from view import view_blueprint as view
-from sqlalchemy.orm import sessionmaker
 from controller import get_tasks, get_task_info
 from controller import get_scoreboard, get_solved_tasks, get_teamdata
 from controller import get_hints, get_commits, get_tasknametype_by_id
@@ -89,17 +92,17 @@ def write_ups_page():
 
 @view.route('/commit', methods=['POST'])
 def commit_flag():
-    if app.config['tasks_opened']:
-        if request.form.has_key('teamname'):
-            session['teamname'] = request.form.get('teamname')
-        rcode = is_flag_valid(request.form, request.remote_addr)
-        if rcode == 101:
-            return render_template('success.html', args=request.form)
-        elif rcode == 202:
-            return render_template('fail.html')
-        elif rcode == 303:
-            return render_template('already_submitted.html')
-    return ''
+    if not app.config['tasks_opened']:
+        return redirect('/index')
+    if request.form.has_key('teamname'):
+        session['teamname'] = request.form.get('teamname')
+    rcode = is_flag_valid(request.form, request.remote_addr)
+    if rcode == 101:
+        return render_template('success.html', args=request.form)
+    elif rcode == 202:
+        return render_template('fail.html')
+    elif rcode == 303:
+        return render_template('already_submitted.html')
 
 @view.route('/admin', methods=['GET', 'POST'])
 def admin_login():
@@ -137,4 +140,12 @@ def show_commits():
         return render_template('locked.html')
     commits = get_commits()
     return render_template('commits.html', commits=commits)
+
+@view.route('/files/<path:task>/<path:filename>')
+def return_static_file(task, filename):
+    if not app.config['tasks_opened']:
+        return redirect('/index')
+    return send_from_directory(os.path.join('files/tasks/', task),
+                               filename,
+                               as_attachment=True)
 
