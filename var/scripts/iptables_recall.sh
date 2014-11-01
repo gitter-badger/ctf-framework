@@ -1,9 +1,9 @@
 
 ROOT_UID=0
-TIMEOUT=600
-NC_PORT=88
+TIMEOUT=60
+NC_PORT=512
 
-password='####insert your password here####'
+password='The King sits on The Pot'
 
 if [ "$UID" -ne "$ROOT_UID" ]
 then 
@@ -19,8 +19,8 @@ fi
 # screen -S flush-iptables -d -m bash -c "sleep $TIMEOUT && iptables -F" && echo "Timeout for --flush iptables has been set to $TIMEOUT seconds"
 
 ### INSERT YOUR IPTABLES CODE HERE
-
-iptables -A INPUT -p tcp --dport 513:49152 -j DROP
+iptables -F
+iptables -A INPUT -p tcp --match multiport --dports 513:48152 -j DROP
 
 for (( ;; )) { 
 	netcat -l -p $NC_PORT | \
@@ -29,13 +29,13 @@ for (( ;; )) {
 	do
 		count=$(echo "$line" | grep -c "$password")
 		if [ "$count" -eq 1 ]; then
-			iptables -A INPUT -m recent --name auth --set
+			iptables -A INPUT -m recent --name auth --set --rsource
 		fi
 	done
 	time_start=$(date +%H)
 	time_stop=$(date +$(echo "($time_start+2) % 24" | bc):%M)
 	time_start=$(date +"$time_start":%M)
-	iptables -I INPUT -p tcp --dport 513:49152 -m recent --rcheck --name auth --seconds 10  -j ACCEPT -m time --timestart $time_start --timestop $time_stop
+	iptables -I INPUT -p tcp --match multiport --dports 513:48152 -m recent --rcheck --name auth -j ACCEPT -m time --timestart $time_start --timestop $time_stop
 	sleep 1
 }
 
