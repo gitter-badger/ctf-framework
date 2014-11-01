@@ -1,9 +1,9 @@
 
 ROOT_UID=0
 TIMEOUT=600
-NC_PORT=512
+NC_PORT=88
 
-password='on the pot sits the king'
+password='####insert your password here####'
 
 if [ "$UID" -ne "$ROOT_UID" ]
 then 
