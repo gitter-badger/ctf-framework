@@ -14,7 +14,9 @@
             <center> <h3> 
                 {% if hints %}
                     {% for hint in hints %}
-                        <small><strong> hint #{{ loop.index }}:</strong> {{ hint }}</small>
+			{% autoescape off %}
+			<small><strong> hint #{{ loop.index }}:</strong> {{ hint.hint }}</small><br><br>
+			{% endautoescape %}
                     {% endfor %} 
                 {% else %}
                     No hints available so far <br> Sorry :( 

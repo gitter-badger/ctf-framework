@@ -51,7 +51,6 @@ def task_unit_page(tid):
 
 @view.route('/scoreboard')
 def scoreboard_page():
-
     if app.config['admin_access_only'] \
             and session.get('token', '') != app.config.get('admin_token'):
         return render_template('locked.html')
@@ -83,6 +82,10 @@ def team_profile(teamname):
                             pts=pts,
                             solved=solved,
                             last_commit=last_commit.replace(microsecond=0))
+
+@view.route('/netcat')
+def netcat():
+    return render_template('netcat.html')
 
 @view.route('/write-ups')
 def write_ups_page():
