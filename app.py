@@ -6,12 +6,11 @@ import os.path
 import logging
 from logging.handlers import RotatingFileHandler
 
-from OpenSSL import SSL
 from flask import Flask, request, session, \
     redirect, url_for
 
 from view import view_blueprint
-from controller import initialize_enviroment, create_session
+from controller import initialize_enviroment, create_session, parse_argv
 
 app = Flask(__name__)
 
@@ -32,6 +31,7 @@ if __name__ == '__main__':
     app.config = dict(app.config, **config)
     app.config['engine'] = initialize_enviroment(app.config)
     app.config['session'] = create_session(app.config['engine'])
+    args = vars(parse_argv())
 
     # Setting up database
     app.config['SQLALCHEMY_DATABASE_URI'] = app.config['scheme'] + os.path.join(
@@ -39,16 +39,11 @@ if __name__ == '__main__':
         app.config['score_database'],
     )
 
-
     # Security settings
     app.secret_key = secret_config['secret_key']
     app.config['admin_token'] = secret_config['admin_token']
-    context = SSL.Context(SSL.SSLv23_METHOD)
 
     # Running the app
     app.register_blueprint(view_blueprint)
-    if len(sys.argv) == 2:
-        app.run(host=config['host'], port=int(sys.argv[1])) #, ssl_context=('files/ssl/server.crt', 'files/ssl/server.key'))
-    else:
-        print 'need two args'
-    
+    app.run(host=config['host'], port=args['port'].pop())
+

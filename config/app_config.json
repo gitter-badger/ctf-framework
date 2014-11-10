@@ -4,10 +4,10 @@
     "score_database": "score.db",
     "error-log": "var/log/error-msuctf.log",
     "host": "127.0.0.1",
-    "port": 9911,
 
-    "tasks_opened": false,
+    "tasks_opened": true,
     "scoreboard_opened": true,
-    "writeups_opened": false,
+    "results_opened": true,
+    "global_stat_opened": false,
     "admin_access_only": false
 }

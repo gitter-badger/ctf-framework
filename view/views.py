@@ -1,4 +1,5 @@
 import os
+from functools import wraps
 
 from flask import redirect, render_template, request, url_for, session
 from flask import send_from_directory
@@ -11,16 +12,57 @@ from controller import get_scoreboard, get_solved_tasks, get_teamdata
 from controller import get_hints, get_commits, get_tasknametype_by_id
 from controller import is_flag_valid, proceed_teamdata
 
+
+def admin_only(view_func):
+    @wraps(view_func)
+    def wrapper(*args, **kwds):
+        if app.config['admin_access_only'] \
+                and session.get('token', '') != app.config.get('admin_token'):
+            return render_template('locked.html')
+        return view_func(*args, **kwds)
+    return wrapper
+
+def scoreboard_opened(view_func):
+    @wraps(view_func)
+    def wrapper(*args, **kwds):
+        if not app.config['scoreboard_opened']:
+            return render_template('locked.html')
+        return view_func(*args, **kwds)
+    return wrapper
+
+def tasks_opened(view_func):
+    @wraps(view_func)
+    def wrapper(*args, **kwds):
+        if not app.config['tasks_opened']:
+            return render_template('locked.html')
+        return view_func(*args, **kwds)
+    return wrapper
+
+def results_opened(view_func):
+    @wraps(view_func)
+    def wrapper(*args, **kwds):
+        if not app.config['results_opened']:
+            return render_template('locked.html')
+        return view_func(*args, **kwds)
+    return wrapper
+
+def admin_access(view_func):
+    @wraps(view_func)
+    def wrapper(*args, **kwds):
+        if not session['token'] == app.config.get('admin_token'):
+            return render_template('locked.html')
+        return view_func(*args, **kwds)
+    return wrapper
+
 @view.route('/')
 @view.route('/index')
 def index_page():
     return render_template('index.html')
 
 @view.route('/tasks')
+@admin_only
+@tasks_opened
 def tasks_page():
-    if app.config['admin_access_only'] \
-            and session.get('token', '') != app.config.get('admin_token'):
-        return render_template('locked.html')
     tasks = get_tasks()
     items = {}
     for task in tasks:
@@ -34,12 +76,9 @@ def tasks_page():
                            config=app.config, solved_tasks=solved_tasks)
 
 @view.route('/task/<int:tid>')
+@tasks_opened
+@admin_only
 def task_unit_page(tid):
-    if app.config['admin_access_only'] \
-            and session.get('token', '') != app.config.get('admin_token'):
-        return render_template('locked.html')
-    if not app.config['tasks_opened']:
-        return render_template('locked.html')
     task_info = get_task_info(tid)
     hints = get_hints(tid)
     if task_info and task_info.enabled:
@@ -50,18 +89,24 @@ def task_unit_page(tid):
     return render_template('locked.html')
 
 @view.route('/scoreboard')
+@admin_only
+@scoreboard_opened
 def scoreboard_page():
-    if app.config['admin_access_only'] \
-            and session.get('token', '') != app.config.get('admin_token'):
-        return render_template('locked.html')
-    if not app.config['scoreboard_opened']:
-        return render_template('locked.html')
     scoreboard_info = get_scoreboard()
     return render_template('scoreboard.html', info=scoreboard_info)
 
+@view.route('global_stats')
+@admin_only
+def global_stats():
+    return render_template('global_stats.html')
+
 @view.route('/scoreboard/<string:teamname>')
+@scoreboard_opened
+@admin_only
 def team_profile(teamname):
     teamdata = get_teamdata(teamname)
+    if not teamdata:
+        return render_template('locked.html')
     taskdata = [(get_tasknametype_by_id(flag.task_id), \
                 flag.datetime.replace(microsecond=0)) \
                 for flag in teamdata if flag.result == 'success']
@@ -72,8 +117,6 @@ def team_profile(teamname):
             commits[tasktype] = 0
         commits[tasktype] += 1
 
-    if not app.config['scoreboard_opened'] or not teamdata:
-        return render_template('locked.html')
     pts, solved, last_commit = proceed_teamdata(teamdata)
     return render_template('teamprofile.html',
                             teamname=teamname,
@@ -87,16 +130,17 @@ def team_profile(teamname):
 def netcat():
     return render_template('netcat.html')
 
-@view.route('/write-ups')
-def write_ups_page():
-    if not app.config['writeups_opened']:
+@view.route('/results')
+@admin_only
+def results_page():
+    if not app.config['results_opened']:
         return render_template('locked.html')
-    return render_template('write-ups.html', config=app.config)
+    return render_template('results.html', config=app.config)
 
 @view.route('/commit', methods=['POST'])
+@tasks_opened
+@admin_only
 def commit_flag():
-    if not app.config['tasks_opened']:
-        return redirect('/index')
     if request.form.has_key('teamname'):
         session['teamname'] = request.form.get('teamname')
     rcode = is_flag_valid(request.form, request.remote_addr)
@@ -120,9 +164,8 @@ def admin_login():
     return render_template('locked.html')
 
 @view.route('/admin_panel')
+@admin_access
 def admin_panel():
-    if not session['token'] == app.config.get('admin_token'):
-        return render_template('locked.html')
     return render_template('admin_panel.html')
 
 @view.route('/admin/logout')
@@ -138,16 +181,15 @@ def configure(methods=['POST']):
     return redirect('/admin_panel')
 
 @view.route('/admin/commits')
+@admin_access
 def show_commits():
-    if not session['token'] == app.config.get('admin_token'):
-        return render_template('locked.html')
     commits = get_commits()
     return render_template('commits.html', commits=commits)
 
 @view.route('/files/<path:task>/<path:filename>')
+@tasks_opened
+@admin_only
 def return_static_file(task, filename):
-    if not app.config['tasks_opened']:
-        return redirect('/index')
     return send_from_directory(os.path.join('files/tasks/', task),
                                filename,
                                as_attachment=True)

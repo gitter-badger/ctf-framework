@@ -1,3 +1,4 @@
+import argparse
 import os.path
 from datetime import datetime
 
@@ -8,7 +9,6 @@ from sqlalchemy import or_, desc
 
 import database
 from model import Task, Flag, Hint
-from security import sanitize_html_context
 
 
 def initialize_enviroment(config):
@@ -20,6 +20,11 @@ def create_session(engine):
     Session = sessionmaker(bind=engine)
     session = Session()
     return session
+
+def parse_argv():
+    parser = argparse.ArgumentParser(description='CTF-Framework')
+    parser.add_argument('port', nargs=1, type=int, help='a port to start with')
+    return parser.parse_args()
 
 def get_tasks():
     session = app.config.get('session')
@@ -40,9 +45,9 @@ def is_flag_valid(args, addr):
             args.has_key('flag') and args.has_key('task_id') and \
             args['flag'] and args['task_id']:
         engine = app.config['engine']
-        teamname = sanitize_html_context(args.get('teamname'))
-        task_id = sanitize_html_context(args.get('task_id'))
-        flag = sanitize_html_context(args.get('flag'))
+        teamname = args.get('teamname')
+        task_id = args.get('task_id')
+        flag = args.get('flag')
 
         return get_status_code(teamname, task_id, flag, addr)
     return 202

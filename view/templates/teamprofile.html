@@ -17,20 +17,18 @@
             {% endfor %}
         </table>
         </div>
+        
         <div class='commit_stats'>
             <div class='large_points'>{{pts}}pts</div>
             <h3>Tasks solved: {{solved}}</h3>
             <h3>Last commit on: {{last_commit}}</h3>
+            <div class='jschart_stat'>
+               <h2> Stats </h2>
+               <div id="canvas-holder">
+                   <canvas id="chart-area" width="250" height="250" style='padding-left: 20%;'  />
+               </div>
+            </div>
         </div>
-     <div class='commit_table'>
-     </div>
-     <div class='jschart_stat'>
-        <h2> Stats </h2>
-        <div id="canvas-holder">
-            <canvas id="chart-area" width="250" height="250" style='padding-left: 20%;'  />
-        </div>
-    
-    </div>
 </div>
 
     <script>
