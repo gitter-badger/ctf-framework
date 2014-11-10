@@ -23,7 +23,7 @@ def create_session(engine):
 
 def get_tasks():
     session = app.config.get('session')
-    return session.query(Task).order_by(Task.tasktype)
+    return session.query(Task).order_by(Task.tasktype).order_by(Task.cost)
 
 def get_task_info(id):
     session = app.config.get('session')

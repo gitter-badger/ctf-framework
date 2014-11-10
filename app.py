@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
+import sys
 import json
 import os.path
 import logging
 from logging.handlers import RotatingFileHandler
 
-#from OpenSSL import SSL
+from OpenSSL import SSL
 from flask import Flask, request, session, \
     redirect, url_for
 
@@ -38,13 +39,16 @@ if __name__ == '__main__':
         app.config['score_database'],
     )
 
+
     # Security settings
     app.secret_key = secret_config['secret_key']
     app.config['admin_token'] = secret_config['admin_token']
-    # context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-    # context.load_cert_chain('yourserver.crt', 'yourserver.key')
+    context = SSL.Context(SSL.SSLv23_METHOD)
 
     # Running the app
     app.register_blueprint(view_blueprint)
-    app.run(host=config['host'], port=config['port']) # , ssl_context=context)
-
+    if len(sys.argv) == 2:
+        app.run(host=config['host'], port=int(sys.argv[1])) #, ssl_context=('files/ssl/server.crt', 'files/ssl/server.key'))
+    else:
+        print 'need two args'
+    
