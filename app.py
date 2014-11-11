@@ -11,6 +11,7 @@ from flask import Flask, request, session, \
 
 from view import view_blueprint
 from controller import initialize_enviroment, create_session, parse_argv
+from controller import initialize_results
 
 app = Flask(__name__)
 
@@ -19,6 +20,9 @@ with open('config/app_config.json', 'r') as json_data:
 
 with open('config/secret_config.json', 'r') as json_data:
     secret_config = json.load(json_data)
+
+with open('config/results.json', 'r') as json_data:
+    result_config = json.load(json_data)
 
 if __name__ == '__main__':
     # Setting up loggers
@@ -29,15 +33,13 @@ if __name__ == '__main__':
 
     # App Initialization
     app.config = dict(app.config, **config)
-    app.config['engine'] = initialize_enviroment(app.config)
-    app.config['session'] = create_session(app.config['engine'])
+    app.config['results'] = result_config
     args = vars(parse_argv())
 
     # Setting up database
-    app.config['SQLALCHEMY_DATABASE_URI'] = app.config['scheme'] + os.path.join(
-        app.config['database_path'],
-        app.config['score_database'],
-    )
+    app.config['engine'] = initialize_enviroment(app.config)
+    app.config['session'] = create_session(app.config['engine'])
+    app.config['result_engines'] = initialize_results()
 
     # Security settings
     app.secret_key = secret_config['secret_key']

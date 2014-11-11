@@ -5,7 +5,7 @@ from datetime import datetime
 from flask import current_app as app
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import func
-from sqlalchemy import or_, desc
+from sqlalchemy import or_, desc, distinct
 
 import database
 from model import Task, Flag, Hint
@@ -15,6 +15,9 @@ def initialize_enviroment(config):
     ''' Initializes the databases if they do not exist
     and tables in them '''
     return database.env_init(config)
+
+def initialize_results():
+    result = []
 
 def create_session(engine):
     Session = sessionmaker(bind=engine)
@@ -112,6 +115,10 @@ def check_already_submitted(flag, task_id, teamname, cost, ip_addr):
         return True
     return False
 
+def get_result_list():
+    result = app.config.get('results')
+    return result
+
 def get_scoreboard():
     session = app.config.get('session')
     stat = session.query(
@@ -122,8 +129,9 @@ def get_scoreboard():
         order_by(Flag.datetime).all()
     return stat
 
-def get_teamdata(teamname):
-    session = app.config.get('session')
+def get_teamdata(teamname, session=None):
+    if session is None:
+        session = app.config.get('session')
     return session.query(Flag).filter_by(teamname=teamname).\
                                         order_by(Flag.datetime).all()
 
@@ -139,14 +147,39 @@ def get_commits():
     commits = session.query(Flag).all()
     return commits
 
-def get_solved_tasks(teamname):
-    session = app.config.get('session')
+def get_solved_tasks(teamname, session=None):
+    if session is None:
+        session = app.config.get('session')
     solved_tasks = session.query(Flag.task_id).\
         filter_by(teamname=teamname, result='success').all()
     return solved_tasks
 
-def get_tasknametype_by_id(task_id):
-    session = app.config.get('session')
+def get_tasknametype_by_id(task_id, session=None):
+    if session is None:
+        session = app.config.get('session')
     return session.query(Task.taskname, Task.tasktype).\
         filter_by(id=task_id).first()
 
+def get_less_results(session):
+    stat = session.query(
+                func.sum(Flag.cost),
+                Flag.teamname,
+    ).filter_by(result='success').group_by(Flag.teamname).\
+        order_by(desc(func.sum(Flag.cost))).\
+        order_by(Flag.datetime).all()
+    return stat
+
+def get_global_stats(session):
+    total_tasks = session.query(func.count(Task.id)).first()
+    total_commits = session.query(func.max(Flag.id)).first()
+    total_valid_commits = session.query(func.count(Flag.id)).\
+        filter_by(result='success').first()
+    total_teams = session.query(func.count(distinct(Flag.teamname))).first()
+    stats = session.query(func.count(Flag.id), Task.taskname).\
+        filter_by(result='success').\
+        join(Task, Task.id == Flag.task_id).\
+        group_by(Task.id).order_by(func.count(Flag.id)).all()
+    total_tasks_solved = (len(stats),)
+
+    return total_tasks, total_tasks_solved, total_commits, total_valid_commits, \
+        total_teams, stats

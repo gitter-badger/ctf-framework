@@ -6,12 +6,17 @@ from flask import Flask
 from model import Task, Flag, Base
 
 def env_init(config):
-    engine = create_engine(config.get('scheme') + os.path.join(
+    path = config.get('scheme') + os.path.join(
                                     config.get('database_path'),
                                     config.get('score_database'),
-    ))
+    )
 
+    engine = establish_connection(path)
     Base.metadata.create_all(engine, checkfirst=True)
+    return engine
+
+def establish_connection(path):
+    engine = create_engine(path)
     return engine
 
 def insert_flag(connection, result, flag, task_id, teamname):

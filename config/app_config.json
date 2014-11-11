@@ -1,5 +1,6 @@
 {
     "database_path": "files/databases/",
+    "results_path": "files/results/",
     "scheme": "sqlite:///",
     "score_database": "score.db",
     "error-log": "var/log/error-msuctf.log",

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div id="content">
+    <div id="content_box">
+        <h1> Results of previous years </h1>
+        <center>
+        <table class="table table-hover score_table">
+            <tr> <th> # </th> <th> Competition </th> </tr>
+            {% for competition in competitions %}
+                <tr> <td>{{ loop.index }}<td><a href="/results/{{- loop.index -}}">{{ competition }}</a></td></tr>
+            {% endfor %}
+        </table>
+        </center>
+    </div>
+</div>
+{% endblock body %} 
