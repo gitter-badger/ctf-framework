@@ -183,3 +183,11 @@ def get_global_stats(session):
 
     return total_tasks, total_tasks_solved, total_commits, total_valid_commits, \
         total_teams, stats
+
+def edit_settings(settings):
+    if settings.get('tasks'):
+        app.config['tasks_opened'] ^= True
+    if settings.get('scoreboard'):
+        app.config['scoreboard_opened'] ^= True
+    if settings.get('results'):
+        app.config['results_opened'] ^= True

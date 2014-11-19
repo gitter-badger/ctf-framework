@@ -8,10 +8,10 @@
             <li> <h3> <a href='/admin/commits'> Watch commits </a> </h3> </li>
         </ul>
         <h2> Settings </h2>
-        <form action='/configure' method='POST'> 
-            <button name='tasks' class="admin_button {{tasks_enabled}}" value=""> Toggle Tasks </button>
-            <button name='scoreboard' class="admin_button {{scoreboard_enabled}}" value=""> Toggle Scoreboard </button>
-            <button name='writeups' class="admin_button {{writeups_enabled}}" value=""> Toggle Writeups </button>
+        <form action='/admin/configure' method='POST'> 
+            <button name='tasks' class="admin_button" value="toggle"> Toggle Tasks </button>
+            <button name='scoreboard' class="admin_button" value="toggle"> Toggle Scoreboard </button>
+            <button name='results' class="admin_button" value="toggle"> Toggle Results</button>
         </form>
     </div>
 </div>

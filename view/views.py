@@ -11,7 +11,7 @@ from controller import get_tasks, get_task_info, get_less_results
 from controller import get_scoreboard, get_solved_tasks, get_teamdata
 from controller import get_hints, get_commits, get_tasknametype_by_id
 from controller import is_flag_valid, proceed_teamdata, get_result_list
-from controller import create_session, get_global_stats
+from controller import create_session, get_global_stats, edit_settings
 from controller.database import establish_connection
 
 
@@ -229,11 +229,11 @@ def admin_logout():
     session['token'] = ''
     return redirect('/index')
 
-@view.route('/admin/configure')
-def configure(methods=['POST']):
+@view.route('/admin/configure', methods=['POST'])
+def configure():
     if not session['token'] == app.config.get('admin_token'):
         return render_template('locked.html')
-    # TODO: configure here
+    edit_settings(request.form)
     return redirect('/admin_panel')
 
 @view.route('/admin/commits')
