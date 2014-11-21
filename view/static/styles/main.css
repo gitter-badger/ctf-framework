@@ -223,10 +223,10 @@ ul {
 }
 
 .score_table {
+    table-layout: fixed;
     margin-top: 50px;
     width: 100%;
     padding: 10px;
-
 }
 
 .flagicon {

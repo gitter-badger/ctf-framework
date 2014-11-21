@@ -1,5 +1,8 @@
 import argparse
 import os.path
+import sched
+import time
+from threading import Timer
 from datetime import datetime
 
 from flask import current_app as app
@@ -191,3 +194,32 @@ def edit_settings(settings):
         app.config['scoreboard_opened'] ^= True
     if settings.get('results'):
         app.config['results_opened'] ^= True
+    if settings.get('freeze'):
+        app.config['scoreboard_frozen'] ^= True
+
+def init_countdown(config):
+    freeze = int(config['scoreboard_freeze'])
+    start_time = int(config['start_time'])
+    length = int(config['end_time']) - start_time
+    passed_time = int(time.time()) - start_time
+
+    settings = {
+                'tasks': True,
+                'scoreboard': True,
+    }
+
+    if passed_time > length:
+        return False
+
+    if passed_time < 0:
+        Timer(-passed_time, edit_settings, settings).start()
+    if passed_time < freeze:
+        Timer(-passed_time + freeze, edit_settings, {'scoreboard': True}).start()
+    if passed_time < length:
+        Timer(-passed_time + length, edit_settings, {'tasks': True}).start()
+    return passed_time
+
+
+
+
+

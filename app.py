@@ -6,12 +6,11 @@ import os.path
 import logging
 from logging.handlers import RotatingFileHandler
 
-from flask import Flask, request, session, \
-    redirect, url_for
+from flask import Flask, request, session, redirect, url_for
 
 from view import view_blueprint
 from controller import initialize_enviroment, create_session, parse_argv
-from controller import initialize_results
+from controller import initialize_results, init_countdown
 
 app = Flask(__name__)
 
@@ -35,6 +34,7 @@ if __name__ == '__main__':
     app.config = dict(app.config, **config)
     app.config['results'] = result_config
     args = vars(parse_argv())
+    init_countdown(app.config)
 
     # Setting up database
     app.config['engine'] = initialize_enviroment(app.config)

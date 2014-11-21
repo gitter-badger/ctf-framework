@@ -10,5 +10,10 @@
     "scoreboard_opened": true,
     "results_opened": true,
     "global_stat_opened": false,
-    "admin_access_only": false
+    "admin_access_only": false,
+    "scoreboard_frozen": false,
+
+    "start_time": 1416567753,
+    "end_time": 1416568053,
+    "scoreboard_freeze": 3000
 }

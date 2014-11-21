@@ -4,7 +4,7 @@
     <div id="content_box"> 
         <center>
             {% if info %}
-            <table class="table table-hover score_table">
+            <table class="table table-hover score_table"> 
                 <tr> <th> # </th> <th> TeamName </th> <th> Score </th> </tr>
                 {% for team in info %}      
                     <tr><td>{{ loop.index }}</td> <td><a href='/scoreboard/{{team[1]}}'>{{ team[1] }}</a></td><td>{{ team[0] }}</td></tr>
